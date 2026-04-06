@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { TerminalHeader } from '@/components/layout/terminal-header'
 import { PlayerProfileView } from '@/components/player/player-profile-view'
-import { SEED_PLAYERS, SEED_SEASONS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS, SEED_SEASONS_BY_SLUG } from '@/lib/data/seed-prospects'
 import type { Player } from '@/types'
 import type { Metadata } from 'next'
 
@@ -22,9 +22,7 @@ export default async function PlayerPage({ params }: Props) {
   const player = SEED_PLAYERS.find((p) => p.slug === slug)
   if (!player) notFound()
 
-  // Find matching season stats by index (simplified - in production would match by player_id)
-  const playerIndex = SEED_PLAYERS.indexOf(player)
-  const seasonStats = playerIndex < SEED_SEASONS.length ? SEED_SEASONS[playerIndex] : null
+  const seasonStats = SEED_SEASONS_BY_SLUG[slug] ?? null
 
   return (
     <div>
