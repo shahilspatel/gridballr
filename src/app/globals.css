@@ -1,26 +1,148 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #e4e4e7;
+  --cyan: #00f0ff;
+  --cyan-dim: #00f0ff33;
+  --cyan-glow: #00f0ff66;
+  --green: #00ff88;
+  --amber: #ffb800;
+  --red: #ff3b3b;
+  --surface: #111113;
+  --surface-2: #18181b;
+  --border: #27272a;
+  --muted: #71717a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-cyan: var(--cyan);
+  --color-cyan-dim: var(--cyan-dim);
+  --color-cyan-glow: var(--cyan-glow);
+  --color-green: var(--green);
+  --color-amber: var(--amber);
+  --color-red: var(--red);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-muted: var(--muted);
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cyan-dim) transparent;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-mono);
+}
+
+::selection {
+  background: var(--cyan-dim);
+  color: var(--cyan);
+}
+
+/* Terminal glow effect */
+.glow {
+  text-shadow:
+    0 0 8px var(--cyan-glow),
+    0 0 16px var(--cyan-dim);
+}
+
+.glow-green {
+  text-shadow:
+    0 0 8px #00ff8866,
+    0 0 16px #00ff8833;
+}
+
+/* Scanline overlay for hero sections */
+.scanlines::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* Stat bar animations */
+@keyframes fill-bar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--bar-width);
+  }
+}
+
+.stat-bar {
+  animation: fill-bar 0.6s ease-out forwards;
+}
+
+/* Tier badge colors */
+.tier-elite {
+  color: #ffd700;
+  border-color: #ffd700;
+}
+.tier-franchise {
+  color: #00f0ff;
+  border-color: #00f0ff;
+}
+.tier-all-star {
+  color: #a78bfa;
+  border-color: #a78bfa;
+}
+.tier-starter {
+  color: #00ff88;
+  border-color: #00ff88;
+}
+.tier-rotation {
+  color: #ffb800;
+  border-color: #ffb800;
+}
+.tier-depth {
+  color: #71717a;
+  border-color: #71717a;
+}
+
+/* Position group colors */
+.pos-qb {
+  color: #ff6b6b;
+}
+.pos-rb {
+  color: #00ff88;
+}
+.pos-wr {
+  color: #00f0ff;
+}
+.pos-te {
+  color: #ffd700;
+}
+.pos-ol {
+  color: #a78bfa;
+}
+.pos-dl {
+  color: #ff8c42;
+}
+.pos-edge {
+  color: #ff3b3b;
+}
+.pos-lb {
+  color: #ffb800;
+}
+.pos-cb {
+  color: #4ecdc4;
+}
+.pos-s {
+  color: #45b7d1;
 }

@@ -1,65 +1,74 @@
-import Image from "next/image";
+import { TerminalHeader } from '@/components/layout/terminal-header'
+import { PlayerCard } from '@/components/player/player-card'
+import { BigBoardFilters } from '@/components/draft/big-board-filters'
+import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 
-export default function Home() {
+export default function HomePage() {
+  const players = SEED_PLAYERS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div>
+      <TerminalHeader
+        title="BIG_BOARD"
+        subtitle="2026 NFL Draft Consensus Rankings"
+        status="BOARD_ACTIVE"
+      />
+
+      {/* Hero */}
+      <div className="relative border-b border-border bg-surface px-4 py-8 sm:px-6">
+        <div className="scanlines mx-auto max-w-7xl">
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2 text-[10px] text-muted">
+              <span>SYS.INIT</span>
+              <span className="text-border">&gt;</span>
+              <span>GRIDBALLR_v0.1.0</span>
+              <span className="text-border">&gt;</span>
+              <span className="text-green">ALL_SYSTEMS_OPERATIONAL</span>
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+              2026 NFL DRAFT <span className="text-cyan glow">BIG BOARD</span>
+            </h1>
+            <p className="max-w-lg text-sm text-muted">
+              Consensus prospect rankings powered by advanced analytics, scouting reports, and
+              combine data. Updated in real-time.
+            </p>
+            <div className="mt-2 flex items-center gap-4 text-[10px] text-muted">
+              <span>
+                <span className="text-cyan">{players.length}</span> PROSPECTS LOADED
+              </span>
+              <span>
+                <span className="text-cyan">2026</span> DRAFT_CLASS
+              </span>
+              <span>
+                LAST_SYNC:{' '}
+                <span className="text-green">{new Date().toISOString().split('T')[0]}</span>
+              </span>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+      </div>
+
+      {/* Filters */}
+      <BigBoardFilters />
+
+      {/* Board */}
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+        <div className="flex flex-col gap-2">
+          {players.map((player, i) => (
+            <PlayerCard
+              key={player.slug}
+              player={player as any}
+              rank={player.big_board_rank ?? i + 1}
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          ))}
         </div>
-      </main>
+
+        {/* Footer status */}
+        <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-muted">
+          <div className="h-1.5 w-1.5 rounded-full bg-cyan" />
+          <span>END_OF_BOARD // {players.length} PROSPECTS // DRAFT_YEAR:2026</span>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
