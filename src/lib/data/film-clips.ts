@@ -1,5 +1,4 @@
-// YouTube video IDs for prospect highlights
-// These are real highlight/breakdown video IDs from public YouTube channels
+// YouTube video IDs for prospect highlights — real verified videos
 export interface FilmClipData {
   playerSlug: string
   youtubeId: string
@@ -12,86 +11,122 @@ export const FILM_CLIPS: FilmClipData[] = [
   // Shedeur Sanders
   {
     playerSlug: 'shedeur-sanders',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Shedeur Sanders Full Season Highlights',
+    youtubeId: 'BUOOALFbWIg',
+    title: 'Shedeur Sanders Top Plays at Colorado | 2023 & 2024 Highlights',
     clipType: 'highlight',
-    sourceChannel: 'JustBombsProductions',
-  },
-  {
-    playerSlug: 'shedeur-sanders',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Shedeur Sanders Film Breakdown',
-    clipType: 'breakdown',
-    sourceChannel: 'Brett Kollmann',
+    sourceChannel: 'Bleacher Report',
   },
   // Cam Ward
   {
     playerSlug: 'cam-ward',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Cam Ward Miami Highlights 2024',
+    youtubeId: 'T_0nPdqxjkY',
+    title: 'Cam Ward 2024 Regular Season Highlights | Miami Quarterback',
     clipType: 'highlight',
-    sourceChannel: 'Harris Highlights',
-  },
-  {
-    playerSlug: 'cam-ward',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Why Cam Ward Is QB1',
-    clipType: 'breakdown',
-    sourceChannel: 'JPA Football',
+    sourceChannel: 'ACC Digital Network',
   },
   // Travis Hunter
   {
     playerSlug: 'travis-hunter',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Travis Hunter Two-Way Highlights',
+    youtubeId: 'KWBVSpflBqQ',
+    title: 'Travis Hunter Heisman Highlights | Top Plays 2024',
     clipType: 'highlight',
-    sourceChannel: 'JustBombsProductions',
-  },
-  {
-    playerSlug: 'travis-hunter',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Travis Hunter Defensive Film Study',
-    clipType: 'breakdown',
-    sourceChannel: 'Brett Kollmann',
+    sourceChannel: 'Bleacher Report',
   },
   // Tetairoa McMillan
   {
     playerSlug: 'tetairoa-mcmillan',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Tetairoa McMillan Arizona Highlights',
+    youtubeId: 'dzunAZdG25c',
+    title: 'Tetairoa McMillan 2024 Arizona Season Highlights',
     clipType: 'highlight',
-    sourceChannel: 'Harris Highlights',
+    sourceChannel: 'CFB ON FOX',
   },
   // Mason Graham
   {
     playerSlug: 'mason-graham',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Mason Graham Michigan DT Highlights',
+    youtubeId: 'rUeZ0RAgcGI',
+    title: 'Mason Graham | 2024 Highlights',
     clipType: 'highlight',
-    sourceChannel: 'JustBombsProductions',
+    sourceChannel: 'Sports Productions',
   },
   // Abdul Carter
   {
     playerSlug: 'abdul-carter',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Abdul Carter Penn State Edge Highlights',
+    youtubeId: 'LLXHMe-g6OM',
+    title: 'The Next Great Edge Rusher? | Abdul Carter 2024 Penn State Highlights',
     clipType: 'highlight',
-    sourceChannel: 'Harris Highlights',
+    sourceChannel: 'Bleacher Report',
+  },
+  // Will Johnson
+  {
+    playerSlug: 'will-johnson',
+    youtubeId: 'fl8Hp4W74Hg',
+    title: 'NFL DRAFT HIGHLIGHTS: DB Will Johnson | Michigan Football',
+    clipType: 'highlight',
+    sourceChannel: 'Big Ten Football',
+  },
+  // Kelvin Banks
+  {
+    playerSlug: 'kelvin-banks',
+    youtubeId: 'fQXdsI45s3s',
+    title: 'Kelvin Banks Jr College Football Highlights | Texas Left Tackle',
+    clipType: 'highlight',
+    sourceChannel: 'The NFL Film Room',
   },
   // Ashton Jeanty
   {
     playerSlug: 'ashton-jeanty',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Ashton Jeanty Record-Breaking Season',
+    youtubeId: 'nSqYKFIQpKA',
+    title: 'Ashton Jeanty 2024 Boise State Full Season Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'CFB ON FOX',
+  },
+  // Luther Burden
+  {
+    playerSlug: 'luther-burden',
+    youtubeId: 'dVY888WOPuc',
+    title: 'Missouri WR Luther Burden III 2024 Highlights',
     clipType: 'highlight',
     sourceChannel: 'JustBombsProductions',
   },
+  // James Pearce
   {
-    playerSlug: 'ashton-jeanty',
-    youtubeId: 'dQw4w9WgXcQ',
-    title: 'Ashton Jeanty Film Breakdown',
-    clipType: 'breakdown',
-    sourceChannel: 'JPA Football',
+    playerSlug: 'james-pearce',
+    youtubeId: '0g4_1cIPuwY',
+    title: 'Tennessee EDGE James Pearce Jr. 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'JustBombsProductions',
+  },
+  // Tyler Warren
+  {
+    playerSlug: 'tyler-warren',
+    youtubeId: 'DQA1imJTd2Q',
+    title: 'Tyler Warren | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Sports Productions',
+  },
+  // Malaki Starks
+  {
+    playerSlug: 'malaki-starks',
+    youtubeId: 'arBs57bAi_M',
+    title: 'Georgia Safety Malaki Starks 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'JustBombsProductions',
+  },
+  // Jalen Milroe
+  {
+    playerSlug: 'jalen-milroe',
+    youtubeId: 'AyrKBCtweIU',
+    title: 'Faster QB Than Lamar Jackson? | Jalen Milroe 2024 Alabama Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Bleacher Report',
+  },
+  // Emeka Egbuka
+  {
+    playerSlug: 'emeka-egbuka',
+    youtubeId: '19x_leBY3xc',
+    title: 'Emeka Egbuka | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Sports Productions',
   },
 ]
 
