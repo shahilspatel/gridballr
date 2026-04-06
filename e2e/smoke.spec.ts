@@ -65,7 +65,7 @@ test.describe('Smoke Tests — All Pages Load', () => {
   test('pricing page loads', async ({ page }) => {
     await page.goto('/pricing')
     await expect(page.locator('text=UPGRADE TO')).toBeVisible()
-    await expect(page.locator('text=$12')).toBeVisible()
+    await expect(page.getByRole('button', { name: '$12/MONTH' })).toBeVisible()
   })
 
   test('login page loads', async ({ page }) => {

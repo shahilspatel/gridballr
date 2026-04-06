@@ -1,14 +1,35 @@
+'use client'
+
 import { TerminalHeader } from '@/components/layout/terminal-header'
 import { PLANS } from '@/lib/stripe/plans'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Pricing — GridBallr Pro',
-  description:
-    'Upgrade to GridBallr Pro for advanced analytics, film terminal, mock drafts, and dynasty tools.',
-}
+import { useState } from 'react'
 
 export default function PricingPage() {
+  const [loading, setLoading] = useState(false)
+  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
+
+  const handleUpgrade = async (cycle: 'monthly' | 'annual') => {
+    setLoading(true)
+    try {
+      const priceId =
+        cycle === 'monthly' ? PLANS.pro.stripePriceIdMonthly : PLANS.pro.stripePriceIdAnnual
+
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId }),
+      })
+
+      const { sessionUrl } = await response.json()
+      if (sessionUrl) window.location.href = sessionUrl
+    } catch (error) {
+      console.error('Checkout error:', error)
+      alert('Failed to start checkout. Please try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div>
       <TerminalHeader title="PRICING" subtitle="GridBallr Pro Access" status="PLANS_AVAILABLE" />
@@ -75,9 +96,22 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <button className="mt-6 w-full border border-cyan bg-cyan/10 py-2.5 text-[11px] font-bold tracking-wider text-cyan transition-colors hover:bg-cyan/20">
-              UPGRADE_NOW
-            </button>
+            <div className="mt-6 flex flex-col gap-2">
+              <button
+                onClick={() => handleUpgrade('monthly')}
+                disabled={loading}
+                className="w-full border border-cyan bg-cyan/10 py-2.5 text-[11px] font-bold tracking-wider text-cyan transition-colors hover:bg-cyan/20 disabled:opacity-50"
+              >
+                {loading ? 'PROCESSING...' : `$${PLANS.pro.priceMonthly}/MONTH`}
+              </button>
+              <button
+                onClick={() => handleUpgrade('annual')}
+                disabled={loading}
+                className="w-full border border-cyan bg-cyan/10 py-2.5 text-[11px] font-bold tracking-wider text-cyan transition-colors hover:bg-cyan/20 disabled:opacity-50"
+              >
+                {loading ? 'PROCESSING...' : `$${PLANS.pro.priceYearly}/YEAR`}
+              </button>
+            </div>
           </div>
         </div>
 

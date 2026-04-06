@@ -14,6 +14,8 @@ export const PLANS = {
     name: 'Pro',
     priceMonthly: 12,
     priceYearly: 80,
+    stripePriceIdMonthly: 'price_1TJMuwRs8ygHxhFydPZoU6wX',
+    stripePriceIdAnnual: 'price_1TJMvoRs8ygHxhFyBmpW9fnN',
     description: 'Full scouting suite',
     features: [
       'Everything in Free',

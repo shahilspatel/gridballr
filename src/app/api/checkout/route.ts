@@ -49,5 +49,5 @@ export async function POST(req: Request) {
     metadata: { user_id: user.id },
   })
 
-  return NextResponse.json({ url: session.url })
+  return NextResponse.json({ sessionUrl: session.url })
 }
