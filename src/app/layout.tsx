@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JetBrains_Mono } from 'next/font/google'
 import { Navbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 import './globals.css'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -45,9 +46,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${jetbrainsMono.variable} dark`}>
-      <body className="min-h-screen bg-background font-mono text-foreground antialiased">
+      <body className="flex min-h-screen flex-col bg-background font-mono text-foreground antialiased">
         <Navbar />
-        <main className="pt-14">{children}</main>
+        <main className="flex-1 pt-14">{children}</main>
+        <Footer />
       </body>
     </html>
   )

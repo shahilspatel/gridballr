@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 test.describe('Smoke Tests — All Pages Load', () => {
   test('homepage loads with big board', async ({ page }) => {
     await page.goto('/')
-    await expect(page.locator('text=BIG BOARD')).toBeVisible()
+    await expect(page.locator('h1:has-text("BIG BOARD")')).toBeVisible()
     await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
     await expect(page.getByRole('link', { name: 'GRIDBALLR' })).toBeVisible()
   })
