@@ -1,10 +1,12 @@
 import { TerminalHeader } from '@/components/layout/terminal-header'
-import { PlayerCard } from '@/components/player/player-card'
-import { BigBoardFilters } from '@/components/draft/big-board-filters'
+import { BigBoard } from '@/components/draft/big-board'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import type { Player } from '@/types'
 
 export default function HomePage() {
-  const players = SEED_PLAYERS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+  const players = (SEED_PLAYERS as Player[]).sort(
+    (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
+  )
 
   return (
     <div>
@@ -48,27 +50,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Filters */}
-      <BigBoardFilters />
-
-      {/* Board */}
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6">
-        <div className="flex flex-col gap-2">
-          {players.map((player, i) => (
-            <PlayerCard
-              key={player.slug}
-              player={player as any}
-              rank={player.big_board_rank ?? i + 1}
-            />
-          ))}
-        </div>
-
-        {/* Footer status */}
-        <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-muted">
-          <div className="h-1.5 w-1.5 rounded-full bg-cyan" />
-          <span>END_OF_BOARD // {players.length} PROSPECTS // DRAFT_YEAR:2026</span>
-        </div>
-      </div>
+      <BigBoard players={players} />
     </div>
   )
 }
