@@ -1,0 +1,51 @@
+SUBJECT: GridBallr is Live — NFL Draft Intelligence Platform
+
+---
+
+Hi there,
+
+We've built something special for NFL draft enthusiasts, fantasy players, and film grinders.
+
+🚀 GridBallr is now live — an advanced scouting platform designed for serious draft preparation.
+
+WHAT YOU GET:
+
+📊 BIG BOARD
+Interactive prospect rankings with filters by position, tier, and measurables.
+Compare 30+ NFL draft prospects at a glance.
+
+📈 STAT MATRIX
+Searchable database with 40+ columns: college stats, combine metrics, PFF grades.
+Sort, filter, export — analyze like a pro scout.
+
+⚖️ COMPARE ENGINE
+Head-to-head prospect analysis. Visual stat comparison. Deep dive into measurables.
+
+🎬 FILM TERMINAL
+Multi-panel workspace with curated YouTube highlights.
+Take notes, annotate, and build your scouting reports.
+
+🏈 MOCK DRAFT SIMULATOR
+32-team AI-powered drafts. Solo or multiplayer (coming soon).
+Simulate trade scenarios. Test your big board.
+
+💎 DYNASTY BRIDGE
+Trade value calculator for dynasty fantasy leagues.
+Rookie rankings. Devy prospect tracking.
+
+⚡ PLUS: Lottery simulator, scouts community, draft history browser, and more.
+
+PRICING:
+
+Free: Big Board, Stat Matrix, Compare Engine
+Pro: $12/month or $80/year — Full feature access
+
+GET STARTED:
+https://gridballr.com
+
+Questions? Reply to this email — I read every one.
+
+Happy scouting,
+Shahil
+
+P.S. This is v1. Big things coming: 3D comp galaxy, real-time multiplayer drafts, advanced analytics. Feedback shapes what we build next.
