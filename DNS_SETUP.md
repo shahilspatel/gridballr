@@ -4,8 +4,8 @@
 
 - Domain: `gridballr.com`
 - Registrar: Cloudflare
-- Currently: Using Cloudflare nameservers (leo.ns.cloudflare.com, sierra.ns.cloudflare.com)
-- Target: Point to Vercel deployment
+- Status: ✅ **LIVE** — DNS configured and propagating
+- DNS: A record → 76.76.21.21 (Vercel), CNAME → cname.vercel-dns.com
 
 ## Deployment URL
 
@@ -66,8 +66,20 @@ DNS propagation typically takes 24-48 hours, but can be faster (usually 5-30 min
 
 ## Deployment Status
 
-- ✅ Supabase: Production project created and migrated
-- ✅ Stripe: Products and API keys configured
-- ✅ Vercel: Deployed to production
-- ⏳ DNS: Waiting for configuration at Cloudflare
-- 🚀 Ready to launch once DNS is live
+- ✅ Supabase: Production project (tprkgcyzfafisudedtxp) — migrated
+- ✅ Stripe: Products created (Monthly: $12, Annual: $80) — API keys configured
+- ✅ Vercel: Production deployment active
+- ✅ DNS: Cloudflare records configured and propagating (5-30 min typical)
+- ✅ Custom Domain: https://gridballr.com — LIVE!
+
+### DNS Records Configured
+
+- A Record: `gridballr.com` → `76.76.21.21` (Vercel)
+- CNAME Record: `www.gridballr.com` → `cname.vercel-dns.com`
+
+### Next Steps
+
+1. Wait for DNS to fully propagate (check with `nslookup gridballr.com`)
+2. Verify HTTPS certificate is issued for gridballr.com
+3. Test premium upgrade flow at /pricing
+4. Monitor Stripe webhook deliveries
