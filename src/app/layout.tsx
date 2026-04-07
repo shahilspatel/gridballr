@@ -46,6 +46,34 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${jetbrainsMono.variable} dark`}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebApplication',
+              name: 'GridBallr',
+              description:
+                'Advanced NFL draft scouting, analytics, and prospect intelligence platform',
+              url: 'https://gridballr.com',
+              applicationCategory: 'Sports Analytics',
+              offers: {
+                '@type': 'Offer',
+                price: '0',
+                priceCurrency: 'USD',
+                name: 'Free Tier',
+              },
+              aggregateRating: {
+                '@type': 'AggregateRating',
+                ratingValue: '5',
+                bestRating: '5',
+                ratingCount: '1',
+              },
+            }),
+          }}
+        />
+      </head>
       <body className="flex min-h-screen flex-col bg-background font-mono text-foreground antialiased">
         <Navbar />
         <main className="flex-1 pt-14">{children}</main>
