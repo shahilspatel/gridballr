@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Mock Draft Simulator',
   description:
-    'Simulate the 2026 NFL Draft with solo and multiplayer modes. Trade picks, draft prospects, and compete.',
+    'Simulate the 2025 NFL Draft with solo and multiplayer modes. Trade picks, draft prospects, and compete.',
 }
 
 export default function MockDraftPage() {

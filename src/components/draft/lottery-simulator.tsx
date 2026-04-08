@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { NFL_TEAMS } from '@/types'
 
-const DRAFT_ORDER_2026 = [
+const DRAFT_ORDER_2025 = [
   { pick: 1, team: 'NYG', record: '3-14' },
   { pick: 2, team: 'CLE', record: '3-14' },
   { pick: 3, team: 'NE', record: '4-13' },
@@ -39,7 +39,7 @@ const DRAFT_ORDER_2026 = [
 ]
 
 export function LotterySimulator() {
-  const [order, setOrder] = useState(DRAFT_ORDER_2026)
+  const [order, setOrder] = useState(DRAFT_ORDER_2025)
   const [simulated, setSimulated] = useState(false)
 
   function simulate() {

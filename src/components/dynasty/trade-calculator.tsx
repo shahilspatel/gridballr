@@ -19,7 +19,7 @@ type TradeAsset = {
 const ALL_PLAYERS = [...ESTABLISHED_PLAYER_VALUES, ...DYNASTY_ROOKIE_VALUES]
 const ALL_PICKS = Object.entries(PICK_VALUES).map(([pick, value]) => ({
   id: `pick-${pick}`,
-  name: `2026 ${pick}`,
+  name: `2025 ${pick}`,
   value,
   type: 'pick' as const,
 }))

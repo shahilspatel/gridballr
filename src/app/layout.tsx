@@ -78,7 +78,7 @@ export default function RootLayout({
       </head>
       <body className="flex min-h-screen flex-col bg-background font-mono text-foreground antialiased">
         <Navbar />
-        <main className="flex-1 pt-14">{children}</main>
+        <main className="flex-1 pt-14 pb-16 md:pb-0">{children}</main>
         <Footer />
         <Analytics />
         <SpeedInsights />

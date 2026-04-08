@@ -26,7 +26,7 @@ export default function DynastyPage() {
           />
           <ModuleCard
             title="ROOKIE_RANKINGS"
-            description="2026 rookie class rankings for dynasty leagues. Tiered by format and scoring."
+            description="2025 rookie class rankings for dynasty leagues. Tiered by format and scoring."
             href="/dynasty/devy"
             status="AVAILABLE"
           />

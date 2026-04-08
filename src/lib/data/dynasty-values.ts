@@ -7,7 +7,7 @@ export interface DynastyPlayerValue {
   tier: string
 }
 
-// Dynasty rookie values for 2026 class (superflex)
+// Dynasty rookie values for 2025 class (superflex)
 export const DYNASTY_ROOKIE_VALUES: DynastyPlayerValue[] = [
   {
     slug: 'shedeur-sanders',

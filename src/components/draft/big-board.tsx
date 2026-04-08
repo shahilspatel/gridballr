@@ -95,7 +95,7 @@ export function BigBoard({ players }: { players: Player[] }) {
 
         <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-muted">
           <div className="h-1.5 w-1.5 rounded-full bg-cyan" />
-          <span>END_OF_BOARD // {filtered.length} PROSPECTS // DRAFT_YEAR:2026</span>
+          <span>END_OF_BOARD // {filtered.length} PROSPECTS // DRAFT_YEAR:2025</span>
         </div>
       </div>
     </>

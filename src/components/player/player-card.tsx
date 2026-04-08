@@ -80,10 +80,10 @@ function TierBadge({ tier }: { tier: string }) {
   const tierClass = `tier-${tier.toLowerCase().replace('_', '-')}`
   const labels: Record<string, string> = {
     ELITE: 'ELITE',
-    FRANCHISE: 'FRNCH',
-    ALL_STAR: 'A-STR',
-    STARTER: 'START',
-    ROTATION: 'ROTN',
+    FRANCHISE: 'FRANCHISE',
+    ALL_STAR: 'ALL-STAR',
+    STARTER: 'STARTER',
+    ROTATION: 'ROTATION',
     DEPTH: 'DEPTH',
   }
 

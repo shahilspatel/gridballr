@@ -12,7 +12,7 @@ export default function HomePage() {
     <div>
       <TerminalHeader
         title="BIG_BOARD"
-        subtitle="2026 NFL Draft Consensus Rankings"
+        subtitle="2025 NFL Draft Consensus Rankings"
         status="BOARD_ACTIVE"
       />
 
@@ -28,7 +28,7 @@ export default function HomePage() {
               <span className="text-green">ALL_SYSTEMS_OPERATIONAL</span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              2026 NFL DRAFT <span className="text-cyan glow">BIG BOARD</span>
+              2025 NFL DRAFT <span className="text-cyan glow">BIG BOARD</span>
             </h1>
             <p className="max-w-lg text-sm text-muted">
               Consensus prospect rankings powered by advanced analytics, scouting reports, and
@@ -39,7 +39,7 @@ export default function HomePage() {
                 <span className="text-cyan">{players.length}</span> PROSPECTS LOADED
               </span>
               <span>
-                <span className="text-cyan">2026</span> DRAFT_CLASS
+                <span className="text-cyan">2025</span> DRAFT_CLASS
               </span>
               <span>
                 LAST_SYNC:{' '}
