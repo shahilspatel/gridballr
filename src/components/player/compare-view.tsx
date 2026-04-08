@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/toast'
 import type { Player } from '@/types'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
@@ -34,6 +35,7 @@ const COMP_STATS: CompStat[] = [
 export function CompareView() {
   const searchParams = useSearchParams()
   const router = useRouter()
+  const { toast } = useToast()
   const [slugA, setSlugA] = useState<string>(searchParams.get('a') ?? 'fernando-mendoza')
   const [slugB, setSlugB] = useState<string>(searchParams.get('b') ?? 'jeremiyah-love')
 
@@ -62,6 +64,7 @@ export function CompareView() {
         <button
           onClick={() => {
             navigator.clipboard.writeText(shareUrl)
+            toast('LINK_COPIED // Share this comparison')
           }}
           className="self-end border border-border px-3 py-1 text-[10px] text-muted transition-colors hover:border-cyan hover:text-cyan"
           aria-label="Copy shareable comparison link"

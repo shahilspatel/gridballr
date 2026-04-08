@@ -5,6 +5,9 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Navbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { GlobalSearch } from '@/components/search/global-search'
+import { KeyboardShortcuts } from '@/components/ui/keyboard-shortcuts'
+import { ScrollToTop } from '@/components/ui/scroll-to-top'
+import { ToastProvider } from '@/components/ui/toast'
 import './globals.css'
 
 const jetbrainsMono = JetBrains_Mono({
@@ -82,10 +85,14 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-screen flex-col bg-background font-mono text-foreground antialiased">
-        <Navbar />
-        <GlobalSearch />
-        <main className="flex-1 pt-14 pb-16 md:pb-0">{children}</main>
-        <Footer />
+        <ToastProvider>
+          <Navbar />
+          <GlobalSearch />
+          <KeyboardShortcuts />
+          <ScrollToTop />
+          <main className="flex-1 pt-14 pb-16 md:pb-0">{children}</main>
+          <Footer />
+        </ToastProvider>
         <Analytics />
         <SpeedInsights />
       </body>

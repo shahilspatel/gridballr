@@ -64,10 +64,18 @@ export function PlayerProfileView({
               </div>
             )}
           </div>
-          <div className="flex flex-col items-end gap-1 text-[10px] text-muted">
-            <span>DRAFT_YEAR: {player.draft_year}</span>
-            <span>CLASS: {player.class_year ?? '—'}</span>
-            {player.hs_ranking && <span>HS_RANK: #{player.hs_ranking}</span>}
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex flex-col items-end gap-1 text-[10px] text-muted">
+              <span>DRAFT_YEAR: {player.draft_year}</span>
+              <span>CLASS: {player.class_year ?? '—'}</span>
+              {player.hs_ranking && <span>HS_RANK: #{player.hs_ranking}</span>}
+            </div>
+            <Link
+              href={`/compare?a=${player.slug}`}
+              className="border border-border px-3 py-1.5 text-[10px] font-bold tracking-wider text-muted transition-colors hover:border-cyan hover:text-cyan"
+            >
+              COMPARE_WITH...
+            </Link>
           </div>
         </div>
       </div>

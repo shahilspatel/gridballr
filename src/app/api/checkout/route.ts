@@ -1,8 +1,16 @@
 import { NextResponse } from 'next/server'
 import { getStripe } from '@/lib/stripe/config'
 import { createClient } from '@/lib/supabase/server'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function POST(req: Request) {
+  // Rate limit: 5 checkout attempts per minute per IP
+  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
+  const { success } = rateLimit(`checkout:${ip}`, { limit: 5, windowMs: 60_000 })
+  if (!success) {
+    return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
+  }
+
   const supabase = await createClient()
   const {
     data: { user },
