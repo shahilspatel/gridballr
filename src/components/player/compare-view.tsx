@@ -37,8 +37,12 @@ export function CompareView() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { toast } = useToast()
-  const [slugA, setSlugA] = useState<string>(searchParams.get('a') ?? 'fernando-mendoza')
-  const [slugB, setSlugB] = useState<string>(searchParams.get('b') ?? 'jeremiyah-love')
+  const paramA = searchParams.get('a') ?? 'fernando-mendoza'
+  const sorted = ALL_PROSPECTS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+  const defaultB =
+    searchParams.get('b') ?? sorted.find((p) => p.slug !== paramA)?.slug ?? 'jeremiyah-love'
+  const [slugA, setSlugA] = useState<string>(paramA)
+  const [slugB, setSlugB] = useState<string>(defaultB)
 
   // Update URL when players change (shareable links)
   useEffect(() => {
