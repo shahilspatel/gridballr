@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import {
   DYNASTY_ROOKIE_VALUES,
   DYNASTY_ROOKIE_VALUES_2026,
@@ -15,18 +15,25 @@ type TradeAsset = {
   value: number
   type: 'player' | 'pick'
   position?: string
+  category?: string
 }
 
-const ALL_PLAYERS = [
-  ...ESTABLISHED_PLAYER_VALUES,
-  ...DYNASTY_ROOKIE_VALUES_2026,
-  ...DYNASTY_ROOKIE_VALUES,
+const CATEGORIZED_PLAYERS: { category: string; players: DynastyPlayerValue[] }[] = [
+  { category: 'NFL', players: ESTABLISHED_PLAYER_VALUES },
+  { category: '2026 ROOKIE', players: DYNASTY_ROOKIE_VALUES_2026 },
+  { category: '2025 ROOKIE', players: DYNASTY_ROOKIE_VALUES },
 ]
+
+const ALL_PLAYERS = CATEGORIZED_PLAYERS.flatMap(({ category, players }) =>
+  players.map((p) => ({ ...p, category })),
+)
+
 const ALL_PICKS = Object.entries(PICK_VALUES).map(([pick, value]) => ({
   id: `pick-${pick}`,
   name: `2026 ${pick}`,
   value,
   type: 'pick' as const,
+  category: 'PICK',
 }))
 
 export function TradeCalculator() {
@@ -67,10 +74,11 @@ export function TradeCalculator() {
         value: p.value,
         type: 'player',
         position: p.position,
+        category: p.category,
       }),
     )
     const picks: TradeAsset[] = ALL_PICKS.filter((p) => p.name.toLowerCase().includes(q))
-    return [...players, ...picks].slice(0, 10)
+    return [...players, ...picks].slice(0, 15)
   }
 
   return (
@@ -200,7 +208,7 @@ function TradeSide({
           className="w-full border border-border bg-background px-2 py-1.5 text-[11px] text-foreground placeholder:text-muted focus:border-cyan focus:outline-none"
         />
         {showDropdown && filtered.length > 0 && (
-          <div className="absolute left-2 right-2 top-full z-10 max-h-48 overflow-y-auto border border-border bg-background shadow-lg">
+          <div className="absolute left-2 right-2 top-full z-10 max-h-64 overflow-y-auto border border-border bg-background shadow-lg">
             {filtered.map((asset) => (
               <button
                 key={asset.id}
@@ -212,6 +220,9 @@ function TradeSide({
                 className="flex w-full items-center justify-between px-2 py-1.5 text-left transition-colors hover:bg-surface"
               >
                 <div className="flex items-center gap-2">
+                  {asset.category && (
+                    <span className="text-[8px] font-bold text-muted/60">{asset.category}</span>
+                  )}
                   {asset.position && (
                     <span className="text-[9px] font-bold text-cyan">{asset.position}</span>
                   )}
@@ -237,6 +248,9 @@ function TradeSide({
             {assets.map((asset) => (
               <div key={asset.id} className="flex items-center justify-between px-3 py-2">
                 <div className="flex items-center gap-2">
+                  {asset.category && (
+                    <span className="text-[8px] font-bold text-muted/60">{asset.category}</span>
+                  )}
                   {asset.position && (
                     <span className="text-[9px] font-bold text-cyan">{asset.position}</span>
                   )}

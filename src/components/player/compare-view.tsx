@@ -5,11 +5,10 @@ import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
 import type { Player } from '@/types'
-import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
-import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
+import { DRAFT_YEARS } from '@/lib/draft-config'
 import { formatHeight, formatWeight, getPositionColor, getTierColor } from '@/lib/utils/format'
 
-const ALL_PROSPECTS = [...(SEED_PLAYERS_2026 as Player[]), ...(SEED_PLAYERS as Player[])]
+const ALL_PROSPECTS = DRAFT_YEARS.flatMap((d) => d.players as Player[])
 
 type CompStat = {
   label: string
@@ -37,19 +36,18 @@ export function CompareView() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { toast } = useToast()
-  const paramA = searchParams.get('a') ?? 'fernando-mendoza'
-  const sorted = ALL_PROSPECTS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
-  const defaultB =
-    searchParams.get('b') ?? sorted.find((p) => p.slug !== paramA)?.slug ?? 'jeremiyah-love'
+  const paramA = searchParams.get('a') ?? ''
+  const paramB = searchParams.get('b') ?? ''
   const [slugA, setSlugA] = useState<string>(paramA)
-  const [slugB, setSlugB] = useState<string>(defaultB)
+  const [slugB, setSlugB] = useState<string>(paramB)
 
   // Update URL when players change (shareable links)
   useEffect(() => {
     const params = new URLSearchParams()
-    params.set('a', slugA)
-    params.set('b', slugB)
-    router.replace(`/compare?${params.toString()}`, { scroll: false })
+    if (slugA) params.set('a', slugA)
+    if (slugB) params.set('b', slugB)
+    const qs = params.toString()
+    router.replace(qs ? `/compare?${qs}` : '/compare', { scroll: false })
   }, [slugA, slugB, router])
 
   const playerA = ALL_PROSPECTS.find((p) => p.slug === slugA) as Player | undefined
@@ -77,6 +75,18 @@ export function CompareView() {
           COPY_SHARE_LINK
         </button>
       </div>
+
+      {(!slugA || !slugB) && (
+        <div className="border border-border bg-surface p-8 text-center">
+          <span className="text-[10px] text-muted">
+            {!slugA && !slugB
+              ? 'SELECT TWO PROSPECTS TO COMPARE'
+              : !slugB
+                ? 'SELECT A SECOND PROSPECT TO COMPARE'
+                : 'SELECT A FIRST PROSPECT TO COMPARE'}
+          </span>
+        </div>
+      )}
 
       {playerA && playerB && (
         <>
@@ -135,9 +145,10 @@ function PlayerSelector({
         onChange={(e) => onChange(e.target.value)}
         className="border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none"
       >
-        {[2026, 2025].map((year) => (
-          <optgroup key={year} label={`${year} Draft Class`}>
-            {ALL_PROSPECTS.filter((p) => p.slug !== exclude && p.draft_year === year)
+        <option value="">Select prospect...</option>
+        {DRAFT_YEARS.map((d) => (
+          <optgroup key={d.year} label={`${d.year} Draft Class (${d.label})`}>
+            {ALL_PROSPECTS.filter((p) => p.slug !== exclude && p.draft_year === d.year)
               .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
               .map((p) => (
                 <option key={p.slug} value={p.slug}>

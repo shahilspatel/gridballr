@@ -1,27 +1,12 @@
 import { TerminalHeader } from '@/components/layout/terminal-header'
-import { BigBoard } from '@/components/draft/big-board'
 import { DraftYearToggle } from '@/components/draft/draft-year-toggle'
-import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
-import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
+import { DRAFT_YEARS, DEFAULT_DRAFT_YEAR, getAllYears, getYearLabels } from '@/lib/draft-config'
 import type { Player } from '@/types'
 
-const DRAFT_YEARS = {
-  2026: {
-    players: SEED_PLAYERS_2026 as Player[],
-    label: 'UPCOMING',
-    status: 'PROJECTIONS',
-  },
-  2025: {
-    players: SEED_PLAYERS as Player[],
-    label: 'COMPLETED',
-    status: 'FINAL',
-  },
-}
-
 export default function HomePage() {
-  const defaultYear = 2026
-  const data = DRAFT_YEARS[defaultYear]
-  const players = data.players.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+  const allPlayers: Record<number, Player[]> = Object.fromEntries(
+    DRAFT_YEARS.map((d) => [d.year, d.players]),
+  )
 
   return (
     <div>
@@ -54,10 +39,10 @@ export default function HomePage() {
       </div>
 
       <DraftYearToggle
-        years={[2026, 2025]}
-        defaultYear={defaultYear}
-        allPlayers={{ 2026: DRAFT_YEARS[2026].players, 2025: DRAFT_YEARS[2025].players }}
-        labels={{ 2026: 'UPCOMING', 2025: 'COMPLETED' }}
+        years={getAllYears()}
+        defaultYear={DEFAULT_DRAFT_YEAR}
+        allPlayers={allPlayers}
+        labels={getYearLabels()}
       />
     </div>
   )

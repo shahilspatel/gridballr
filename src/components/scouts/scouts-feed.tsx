@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { getPositionColor, getTierColor } from '@/lib/utils/format'
+import { DRAFT_YEARS } from '@/lib/draft-config'
+import type { Player } from '@/types'
 
 interface SampleReport {
   id: string
@@ -239,6 +241,19 @@ function ReportCard({ report }: { report: SampleReport }) {
 }
 
 function ReportForm({ onClose }: { onClose: () => void }) {
+  const [grade, setGrade] = useState('')
+  const [gradeError, setGradeError] = useState('')
+
+  function handleGradeChange(val: string) {
+    setGrade(val)
+    const num = parseFloat(val)
+    if (val && (isNaN(num) || num < 0 || num > 10)) {
+      setGradeError('Grade must be between 0 and 10')
+    } else {
+      setGradeError('')
+    }
+  }
+
   return (
     <div className="border border-cyan/30 bg-surface p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -249,17 +264,22 @@ function ReportForm({ onClose }: { onClose: () => void }) {
       </div>
       <div className="flex flex-col gap-3">
         <select className="border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none">
-          <option>Select prospect...</option>
-          <option>Shedeur Sanders — QB</option>
-          <option>Cam Ward — QB</option>
-          <option>Travis Hunter — CB</option>
-          <option>Tetairoa McMillan — WR</option>
-          <option>Mason Graham — DL</option>
-          <option>Abdul Carter — EDGE</option>
+          <option value="">Select prospect...</option>
+          {DRAFT_YEARS.map((d) => (
+            <optgroup key={d.year} label={`${d.year} Draft Class (${d.label})`}>
+              {(d.players as Player[])
+                .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+                .map((p) => (
+                  <option key={p.slug} value={p.slug}>
+                    #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position}
+                  </option>
+                ))}
+            </optgroup>
+          ))}
         </select>
         <div className="grid grid-cols-2 gap-3">
           <select className="border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none">
-            <option>Tier...</option>
+            <option value="">Tier...</option>
             <option>ELITE</option>
             <option>FRANCHISE</option>
             <option>ALL_STAR</option>
@@ -267,14 +287,21 @@ function ReportForm({ onClose }: { onClose: () => void }) {
             <option>ROTATION</option>
             <option>DEPTH</option>
           </select>
-          <input
-            type="number"
-            min="0"
-            max="10"
-            step="0.1"
-            placeholder="Grade (0-10)"
-            className="border border-border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted focus:border-cyan focus:outline-none"
-          />
+          <div className="flex flex-col gap-1">
+            <input
+              type="number"
+              min="0"
+              max="10"
+              step="0.1"
+              value={grade}
+              onChange={(e) => handleGradeChange(e.target.value)}
+              placeholder="Grade (0-10)"
+              className={`border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted focus:outline-none ${
+                gradeError ? 'border-red focus:border-red' : 'border-border focus:border-cyan'
+              }`}
+            />
+            {gradeError && <span className="text-[9px] text-red">{gradeError}</span>}
+          </div>
         </div>
         <textarea
           placeholder="Your scouting analysis..."

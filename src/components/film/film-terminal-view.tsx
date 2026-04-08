@@ -1,55 +1,84 @@
 'use client'
 
 import { useState } from 'react'
-import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
-import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
-import { FILM_CLIPS, getClipsForPlayer } from '@/lib/data/film-clips'
+import { getClipsForPlayer } from '@/lib/data/film-clips'
 import { getPositionColor } from '@/lib/utils/format'
+import { DRAFT_YEARS, DEFAULT_DRAFT_YEAR, getPlayersForYear } from '@/lib/draft-config'
 import type { Player } from '@/types'
 
-const ALL_PROSPECTS = [...(SEED_PLAYERS_2026 as Player[]), ...(SEED_PLAYERS as Player[])]
-
 export function FilmTerminalView() {
-  const [selectedSlug, setSelectedSlug] = useState('fernando-mendoza')
+  const [activeYear, setActiveYear] = useState(DEFAULT_DRAFT_YEAR)
+  const [selectedSlug, setSelectedSlug] = useState('')
   const [activeClipIdx, setActiveClipIdx] = useState(0)
   const [notes, setNotes] = useState('')
 
-  const player = ALL_PROSPECTS.find((p) => p.slug === selectedSlug) as Player | undefined
-  const clips = getClipsForPlayer(selectedSlug)
+  const prospects = getPlayersForYear(activeYear)
+  const currentSlug = selectedSlug || prospects[0]?.slug || ''
+  const player = prospects.find((p) => p.slug === currentSlug) as Player | undefined
+  const clips = getClipsForPlayer(currentSlug)
   const activeClip = clips[activeClipIdx]
+
+  function handleYearChange(year: number) {
+    setActiveYear(year)
+    setSelectedSlug('')
+    setActiveClipIdx(0)
+  }
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Player selector */}
-      <div className="flex items-center gap-3">
-        <span className="text-[10px] font-bold tracking-widest text-muted">PROSPECT:</span>
-        <select
-          value={selectedSlug}
-          onChange={(e) => {
-            setSelectedSlug(e.target.value)
-            setActiveClipIdx(0)
-          }}
-          className="border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:border-cyan focus:outline-none"
-        >
-          {ALL_PROSPECTS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999)).map(
-            (p) => (
+      {/* Year toggle + Player selector */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
+        <div className="flex items-center gap-1">
+          {DRAFT_YEARS.map((d) => (
+            <button
+              key={d.year}
+              onClick={() => handleYearChange(d.year)}
+              className={`px-3 py-1.5 text-[11px] font-bold tracking-wider transition-colors ${
+                activeYear === d.year
+                  ? 'bg-cyan/10 text-cyan border border-cyan/30'
+                  : 'text-muted hover:text-foreground border border-transparent'
+              }`}
+            >
+              {d.year}
+              <span
+                className={`ml-1.5 text-[8px] ${
+                  activeYear === d.year ? 'text-cyan/70' : 'text-muted'
+                }`}
+              >
+                {d.label}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] font-bold tracking-widest text-muted">PROSPECT:</span>
+          <select
+            value={currentSlug}
+            onChange={(e) => {
+              setSelectedSlug(e.target.value)
+              setActiveClipIdx(0)
+            }}
+            className="border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:border-cyan focus:outline-none"
+          >
+            {prospects.map((p) => (
               <option key={p.slug} value={p.slug}>
                 #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position}
               </option>
-            ),
+            ))}
+          </select>
+          {player && (
+            <span
+              className="border px-1.5 py-0.5 text-[10px] font-bold"
+              style={{
+                color: getPositionColor(player.position),
+                borderColor: getPositionColor(player.position),
+              }}
+            >
+              {player.position}
+            </span>
           )}
-        </select>
-        {player && (
-          <span
-            className="border px-1.5 py-0.5 text-[10px] font-bold"
-            style={{
-              color: getPositionColor(player.position),
-              borderColor: getPositionColor(player.position),
-            }}
-          >
-            {player.position}
-          </span>
-        )}
+        </div>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -72,8 +101,13 @@ export function FilmTerminalView() {
               />
             </div>
           ) : (
-            <div className="flex aspect-video items-center justify-center bg-black">
+            <div className="flex aspect-video flex-col items-center justify-center gap-2 bg-black">
               <span className="text-[10px] text-muted">NO CLIPS AVAILABLE FOR THIS PROSPECT</span>
+              {DRAFT_YEARS.find((d) => d.year === activeYear)?.label === 'UPCOMING' && (
+                <span className="text-[9px] text-amber">
+                  FILM FOR {activeYear} CLASS WILL BE ADDED AS SEASON PROGRESSES
+                </span>
+              )}
             </div>
           )}
           {/* Clip list */}
