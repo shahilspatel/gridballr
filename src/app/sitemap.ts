@@ -17,7 +17,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/my-board',
     '/dynasty',
     '/dynasty/calculator',
-    '/lottery',
     '/pricing',
     '/login',
     '/signup',

@@ -126,6 +126,9 @@ export interface ScoutReport {
   badges: Badge[]
   grade: number | null
   reactions: Record<string, number>
+  score: number
+  is_hidden: boolean
+  flag_count: number
   created_at: string
   updated_at: string
   profile?: UserProfile
@@ -140,6 +143,52 @@ export interface UserProfile {
   tier: 'free' | 'pro'
   scout_alias: string | null
   scout_theme: string
+  reputation: number
+  is_banned: boolean
+  banned_until: string | null
+  ban_reason: string | null
+  role: 'user' | 'moderator' | 'admin'
+}
+
+export interface ReportVote {
+  id: string
+  report_id: string
+  user_id: string
+  vote_type: 'fire' | 'brain' | 'cap'
+  created_at: string
+}
+
+export interface CommentVote {
+  id: string
+  comment_id: string
+  user_id: string
+  value: 1 | -1
+  created_at: string
+}
+
+export interface ContentFlag {
+  id: string
+  reporter_id: string
+  target_type: 'report' | 'comment'
+  target_id: string
+  reason: 'profanity' | 'spam' | 'harassment' | 'misinformation' | 'other'
+  details: string | null
+  status: 'pending' | 'reviewed' | 'dismissed'
+  created_at: string
+}
+
+export interface ReportComment {
+  id: string
+  report_id: string
+  user_id: string
+  content: string
+  score: number
+  is_hidden: boolean
+  created_at: string
+  profile?: Pick<
+    UserProfile,
+    'username' | 'display_name' | 'avatar_url' | 'scout_alias' | 'scout_theme'
+  >
 }
 
 export interface DraftBoard {

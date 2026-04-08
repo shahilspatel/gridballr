@@ -14,7 +14,6 @@ const NAV_LINKS = [
   { href: '/scouts', label: 'SCOUTS', shortLabel: 'SCOUTS' },
   { href: '/my-board', label: 'MY_BOARD', shortLabel: 'MY BOARD' },
   { href: '/dynasty', label: 'DYNASTY', shortLabel: 'DYNASTY' },
-  { href: '/lottery', label: 'LOTTERY', shortLabel: 'LOTTERY' },
 ] as const
 
 // Primary items shown directly in the bottom bar (max 5 for thumb reach)

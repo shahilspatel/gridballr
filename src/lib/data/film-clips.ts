@@ -128,6 +128,184 @@ export const FILM_CLIPS: FilmClipData[] = [
     clipType: 'highlight',
     sourceChannel: 'Sports Productions',
   },
+  // Mykel Williams
+  {
+    playerSlug: 'mykel-williams',
+    youtubeId: 'EHvc6TO9kS8',
+    title: 'Mykel Williams | 2024 Georgia Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'JustBombsProductions',
+  },
+  // Nic Scourton
+  {
+    playerSlug: 'nic-scourton',
+    youtubeId: 'QXOq3QifMk4',
+    title: 'Nic Scourton | 2024 Film Breakdown',
+    clipType: 'breakdown',
+    sourceChannel: 'The NFL Film Room',
+  },
+  // Will Campbell
+  {
+    playerSlug: 'will-campbell',
+    youtubeId: 'f15fLM9NbRM',
+    title: 'Will Campbell | 2024 Film Breakdown',
+    clipType: 'breakdown',
+    sourceChannel: 'The NFL Film Room',
+  },
+  // Benjamin Morrison
+  {
+    playerSlug: 'benjamin-morrison',
+    youtubeId: 'pyg_VPAfh8o',
+    title: 'Benjamin Morrison | 2024 Notre Dame Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'JustBombsProductions',
+  },
+  // Colston Loveland
+  {
+    playerSlug: 'colston-loveland',
+    youtubeId: 'jVNY--9E6FQ',
+    title: 'Colston Loveland | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Sports Productions',
+  },
+  // Jalon Walker
+  {
+    playerSlug: 'jalon-walker',
+    youtubeId: 'fhiPxZ1m040',
+    title: 'Jalon Walker | 2024 Georgia Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'JustBombsProductions',
+  },
+  // Derrick Harmon
+  {
+    playerSlug: 'derrick-harmon',
+    youtubeId: 'VqFjHY_vGnE',
+    title: 'Derrick Harmon | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Sports Productions',
+  },
+  // Nick Singleton
+  {
+    playerSlug: 'nick-singleton',
+    youtubeId: 'IEr8GIkY6MU',
+    title: 'Nick Singleton | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Sports Productions',
+  },
+  // Cam Skattebo
+  {
+    playerSlug: 'cam-skattebo',
+    youtubeId: '6p3MTUCfEKM',
+    title: 'Cam Skattebo | 2024 Arizona State Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'CFB ON FOX',
+  },
+  // Kenneth Grant
+  {
+    playerSlug: 'kenneth-grant',
+    youtubeId: 'GcbQL6f5sqw',
+    title: 'Kenneth Grant | 2024 Michigan Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Big Ten Football',
+  },
+  // Josh Simmons
+  {
+    playerSlug: 'josh-simmons',
+    youtubeId: '_DhEuUfB6no',
+    title: 'Josh Simmons | 2024 Film Breakdown',
+    clipType: 'breakdown',
+    sourceChannel: 'The NFL Film Room',
+  },
+  // Kenyon Green (2025 class addition — corrected from session notes)
+  {
+    playerSlug: 'kenyon-green',
+    youtubeId: 'Fs3TDX8QAfE',
+    title: 'Kenyon Green | Film Breakdown',
+    clipType: 'breakdown',
+    sourceChannel: 'KCSN',
+  },
+
+  // === 2026 DRAFT CLASS ===
+  // Fernando Mendoza
+  {
+    playerSlug: 'fernando-mendoza',
+    youtubeId: 'qyko59bZxDQ',
+    title: 'Fernando Mendoza | Indiana Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Big Ten Network',
+  },
+  // Jeremiyah Love
+  {
+    playerSlug: 'jeremiyah-love',
+    youtubeId: 'BhaGufwxi0A',
+    title: 'Jeremiyah Love | Notre Dame Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'NBC Sports',
+  },
+  // Caleb Downs
+  {
+    playerSlug: 'caleb-downs',
+    youtubeId: 'hglAu49_moQ',
+    title: 'Caleb Downs | Ohio State Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'Big Ten Network',
+  },
+  // Rueben Bain Jr.
+  {
+    playerSlug: 'rueben-bain-jr',
+    youtubeId: 'avYVgI-9PVs',
+    title: 'Rueben Bain Jr. | Miami Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'ACC Digital Network',
+  },
+  // Makai Lemon
+  {
+    playerSlug: 'makai-lemon',
+    youtubeId: '8YZUxPbIcZw',
+    title: 'Makai Lemon | 2024 Highlights',
+    clipType: 'highlight',
+    sourceChannel: '247Sports',
+  },
+  // TJ Parker
+  {
+    playerSlug: 'tj-parker',
+    youtubeId: 'MX2S6SAVYs0',
+    title: 'TJ Parker | Clemson Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'ACC Digital Network',
+  },
+  // Ty Simpson
+  {
+    playerSlug: 'ty-simpson',
+    youtubeId: 'QbpNHkaeD58',
+    title: 'Ty Simpson | Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'SNY',
+  },
+  // Drew Allar
+  {
+    playerSlug: 'drew-allar',
+    youtubeId: 'haOOM4UnZ88',
+    title: 'Drew Allar | Penn State Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'CBS Sports',
+  },
+  // Carson Beck
+  {
+    playerSlug: 'carson-beck',
+    youtubeId: 'HHVo64ZyhS8',
+    title: 'Carson Beck | Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'ACC Digital Network',
+  },
+  // Demond Claiborne
+  {
+    playerSlug: 'demond-claiborne',
+    youtubeId: 'c-lQrI_oAv4',
+    title: 'Demond Claiborne | Highlights',
+    clipType: 'highlight',
+    sourceChannel: 'ACC Digital Network',
+  },
 ]
 
 export function getClipsForPlayer(slug: string): FilmClipData[] {

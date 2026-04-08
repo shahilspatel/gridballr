@@ -1,108 +1,120 @@
 'use client'
 
-import { useState } from 'react'
-import { getPositionColor, getTierColor } from '@/lib/utils/format'
-import { DRAFT_YEARS } from '@/lib/draft-config'
-import type { Player } from '@/types'
+import { useState, useEffect, useCallback } from 'react'
+import { ReportForm } from './report-form'
+import { ReportCard } from './report-card'
 
-interface SampleReport {
+interface Report {
   id: string
-  scoutAlias: string
-  scoutTheme: string
-  playerName: string
-  position: string
-  school: string
   tier: string
   summary: string
   strengths: string[]
   weaknesses: string[]
   badges: string[]
-  grade: number
+  grade: number | null
   reactions: { fire: number; brain: number; cap: number }
-  timestamp: string
+  created_at: string
+  profile?: {
+    scout_alias: string | null
+    scout_theme: string
+    reputation?: number
+  }
+  player?: {
+    slug: string
+    first_name: string
+    last_name: string
+    position: string
+    school: string
+  }
 }
 
-const SAMPLE_REPORTS: SampleReport[] = [
-  {
-    id: '1',
-    scoutAlias: 'GRID_SCOUT_01',
-    scoutTheme: 'cyan',
-    playerName: 'Shedeur Sanders',
-    position: 'QB',
-    school: 'Colorado',
-    tier: 'ELITE',
-    summary:
-      "Most NFL-ready passer in this class. His ability to read defenses pre-snap and deliver the ball on time to the right spot is elite. Pocket movement is subtle but effective — he slides and delivers rather than bailing. The arm isn't a cannon but it's more than enough. This is a franchise QB.",
-    strengths: ['Processing', 'Accuracy', 'Poise'],
-    weaknesses: ['Deep ball power', 'Athleticism'],
-    badges: ['FIELD_GENERAL', 'PLAY_MAKER'],
-    grade: 9.2,
-    reactions: { fire: 24, brain: 18, cap: 3 },
-    timestamp: '2h ago',
-  },
-  {
-    id: '2',
-    scoutAlias: 'FILM_GRINDER_X',
-    scoutTheme: 'green',
-    playerName: 'Travis Hunter',
-    position: 'CB',
-    school: 'Colorado',
-    tier: 'ELITE',
-    summary:
-      "Generational. I've watched every snap from both sides of the ball. His transitions from WR to CB are seamless — no drop-off in effort or technique. The ball skills are absurd on both sides. Only concern is long-term wear from playing both ways, but the talent is undeniable.",
-    strengths: ['Two-way dominance', 'Ball skills', 'Instincts'],
-    weaknesses: ['Durability risk', 'Slight frame'],
-    badges: ['LOCKDOWN', 'BALL_HAWK', 'ROUTE_TECHNICIAN'],
-    grade: 9.5,
-    reactions: { fire: 42, brain: 31, cap: 1 },
-    timestamp: '5h ago',
-  },
-  {
-    id: '3',
-    scoutAlias: 'EDGE_HUNTER_99',
-    scoutTheme: 'red',
-    playerName: 'Abdul Carter',
-    position: 'EDGE',
-    school: 'Penn State',
-    tier: 'FRANCHISE',
-    summary:
-      "The athleticism is off the charts. When he converts speed to power it's violent. LB-to-EDGE transition has been seamless. His closing speed on QBs is reminiscent of prime Von Miller. Needs to add a counter move but the physical tools are top 5 in this class.",
-    strengths: ['Explosiveness', 'Closing speed', 'Motor'],
-    weaknesses: ['Counter moves', 'Run D consistency'],
-    badges: ['SPEED_DEMON', 'PASS_RUSH_SPECIALIST'],
-    grade: 8.8,
-    reactions: { fire: 15, brain: 12, cap: 2 },
-    timestamp: '1d ago',
-  },
-  {
-    id: '4',
-    scoutAlias: 'DYNASTY_NERD',
-    scoutTheme: 'amber',
-    playerName: 'Ashton Jeanty',
-    position: 'RB',
-    school: 'Boise State',
-    tier: 'ALL_STAR',
-    summary:
-      "The vision is Barry Sanders-level. I don't say that lightly. He sees creases that don't exist yet and hits them at full speed. Contact balance is absurd for his size. The only knock is competition level — we need to see this against SEC fronts consistently.",
-    strengths: ['Vision', 'Contact balance', 'Burst'],
-    weaknesses: ['Competition level', 'Pass pro'],
-    badges: ['PLAY_MAKER', 'SPEED_DEMON'],
-    grade: 8.5,
-    reactions: { fire: 28, brain: 9, cap: 5 },
-    timestamp: '1d ago',
-  },
-]
+type SortMode = 'recent' | 'popular' | 'discussed'
 
 export function ScoutsFeed() {
-  const [activeFilter, setActiveFilter] = useState('RECENT')
+  const [activeFilter, setActiveFilter] = useState<SortMode>('recent')
   const [showForm, setShowForm] = useState(false)
+  const [reports, setReports] = useState<Report[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  const fetchReports = useCallback(async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const res = await fetch(`/api/scouts/reports?sort=${activeFilter}`)
+      if (!res.ok) throw new Error('Failed to load reports')
+      setReports(await res.json())
+    } catch {
+      setError('Failed to load reports')
+    } finally {
+      setLoading(false)
+    }
+  }, [activeFilter])
+
+  useEffect(() => {
+    fetchReports()
+  }, [fetchReports])
+
+  async function handleSubmitReport(data: {
+    player_id: string
+    tier: string
+    summary: string
+    strengths: string[]
+    weaknesses: string[]
+    badges: string[]
+    grade: number
+  }) {
+    const res = await fetch('/api/scouts/reports', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      throw new Error(err.error ?? 'Failed to create report')
+    }
+
+    // Refresh feed
+    await fetchReports()
+  }
+
+  async function handleVote(reportId: string, voteType: 'fire' | 'brain' | 'cap') {
+    const res = await fetch(`/api/scouts/reports/${reportId}/vote`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vote_type: voteType }),
+    })
+
+    if (!res.ok) {
+      const err = await res.json()
+      if (err.error === 'Not authenticated') {
+        setError('Sign in to vote')
+        return
+      }
+    }
+
+    // Optimistic update: adjust count locally
+    setReports((prev) =>
+      prev.map((r) => {
+        if (r.id !== reportId) return r
+        const reactions = { ...r.reactions }
+        // Toggle: we don't know server state, just bump for responsiveness
+        reactions[voteType] = (reactions[voteType] ?? 0) + 1
+        return { ...r, reactions }
+      }),
+    )
+
+    // Then refresh to get accurate server state
+    await fetchReports()
+  }
 
   return (
     <div className="flex flex-col gap-4">
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {['RECENT', 'POPULAR', 'DISCUSSED'].map((tab) => (
+          {(['recent', 'popular', 'discussed'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveFilter(tab)}
@@ -112,7 +124,7 @@ export function ScoutsFeed() {
                   : 'text-muted hover:text-foreground border border-transparent'
               }`}
             >
-              {tab}
+              {tab.toUpperCase()}
             </button>
           ))}
         </div>
@@ -124,194 +136,34 @@ export function ScoutsFeed() {
         </button>
       </div>
 
+      {/* Error */}
+      {error && (
+        <div className="border border-red/30 bg-red/5 px-3 py-2 text-[10px] text-red">{error}</div>
+      )}
+
       {/* Report form */}
-      {showForm && <ReportForm onClose={() => setShowForm(false)} />}
+      {showForm && <ReportForm onClose={() => setShowForm(false)} onSubmit={handleSubmitReport} />}
 
       {/* Reports */}
-      <div className="flex flex-col gap-3">
-        {SAMPLE_REPORTS.map((report) => (
-          <ReportCard key={report.id} report={report} />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function ReportCard({ report }: { report: SampleReport }) {
-  const posColor = getPositionColor(report.position)
-  const tierColor = getTierColor(report.tier)
-
-  return (
-    <div className="border border-border bg-surface transition-colors hover:border-border/80">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-border/50 px-4 py-2">
-        <div className="flex items-center gap-2">
-          <div
-            className="h-2 w-2 rounded-full"
-            style={{
-              backgroundColor:
-                report.scoutTheme === 'cyan'
-                  ? '#00f0ff'
-                  : report.scoutTheme === 'green'
-                    ? '#00ff88'
-                    : report.scoutTheme === 'red'
-                      ? '#ff3b3b'
-                      : '#ffb800',
-            }}
-          />
-          <span className="text-[10px] font-bold text-foreground">{report.scoutAlias}</span>
-          <span className="text-[9px] text-muted">{report.timestamp}</span>
-        </div>
-        <span
-          className="border px-1.5 py-0.5 text-[9px] font-bold tracking-wider"
-          style={{ color: tierColor, borderColor: tierColor }}
-        >
-          {report.tier.replace('_', ' ')}
-        </span>
-      </div>
-
-      {/* Player info */}
-      <div className="px-4 pt-3">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-bold text-foreground">{report.playerName}</span>
-          <span
-            className="border px-1.5 py-0.5 text-[9px] font-bold"
-            style={{ color: posColor, borderColor: posColor }}
-          >
-            {report.position}
-          </span>
-          <span className="text-[10px] text-muted">{report.school}</span>
-          <span className="ml-auto text-sm font-bold tabular-nums text-cyan">{report.grade}</span>
-        </div>
-      </div>
-
-      {/* Summary */}
-      <div className="px-4 py-3">
-        <p className="text-[11px] leading-relaxed text-foreground/70">{report.summary}</p>
-      </div>
-
-      {/* Badges */}
-      <div className="flex flex-wrap gap-1 px-4 pb-2">
-        {report.badges.map((badge) => (
-          <span
-            key={badge}
-            className="border border-cyan/20 bg-cyan/5 px-1.5 py-0.5 text-[8px] font-bold tracking-wider text-cyan"
-          >
-            {badge.replace('_', ' ')}
-          </span>
-        ))}
-      </div>
-
-      {/* Strengths/Weaknesses */}
-      <div className="grid grid-cols-2 gap-2 px-4 pb-3">
-        <div className="flex flex-wrap gap-1">
-          {report.strengths.map((s) => (
-            <span key={s} className="text-[9px] text-green">
-              +{s}
-            </span>
+      {loading ? (
+        <div className="flex flex-col gap-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-48 animate-pulse border border-border bg-surface" />
           ))}
         </div>
-        <div className="flex flex-wrap gap-1">
-          {report.weaknesses.map((w) => (
-            <span key={w} className="text-[9px] text-red">
-              -{w}
-            </span>
+      ) : reports.length === 0 ? (
+        <div className="border border-border bg-surface px-6 py-12 text-center">
+          <p className="text-[11px] text-muted">
+            No reports yet. Be the first scout to submit one.
+          </p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {reports.map((report) => (
+            <ReportCard key={report.id} report={report} onVote={handleVote} />
           ))}
         </div>
-      </div>
-
-      {/* Reactions */}
-      <div className="flex items-center gap-3 border-t border-border/50 px-4 py-2">
-        {[
-          { emoji: 'fire', label: 'FIRE', count: report.reactions.fire },
-          { emoji: 'brain', label: 'BRAIN', count: report.reactions.brain },
-          { emoji: 'cap', label: 'CAP', count: report.reactions.cap },
-        ].map((r) => (
-          <button
-            key={r.label}
-            className="flex items-center gap-1 text-[10px] text-muted transition-colors hover:text-foreground"
-          >
-            <span>{r.label}</span>
-            <span className="tabular-nums text-foreground">{r.count}</span>
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function ReportForm({ onClose }: { onClose: () => void }) {
-  const [grade, setGrade] = useState('')
-  const [gradeError, setGradeError] = useState('')
-
-  function handleGradeChange(val: string) {
-    setGrade(val)
-    const num = parseFloat(val)
-    if (val && (isNaN(num) || num < 0 || num > 10)) {
-      setGradeError('Grade must be between 0 and 10')
-    } else {
-      setGradeError('')
-    }
-  }
-
-  return (
-    <div className="border border-cyan/30 bg-surface p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <span className="text-[10px] font-bold tracking-widest text-cyan">NEW_REPORT</span>
-        <button onClick={onClose} className="text-[10px] text-muted hover:text-red">
-          CLOSE
-        </button>
-      </div>
-      <div className="flex flex-col gap-3">
-        <select className="border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none">
-          <option value="">Select prospect...</option>
-          {DRAFT_YEARS.map((d) => (
-            <optgroup key={d.year} label={`${d.year} Draft Class (${d.label})`}>
-              {(d.players as Player[])
-                .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
-                .map((p) => (
-                  <option key={p.slug} value={p.slug}>
-                    #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position}
-                  </option>
-                ))}
-            </optgroup>
-          ))}
-        </select>
-        <div className="grid grid-cols-2 gap-3">
-          <select className="border border-border bg-background px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none">
-            <option value="">Tier...</option>
-            <option>ELITE</option>
-            <option>FRANCHISE</option>
-            <option>ALL_STAR</option>
-            <option>STARTER</option>
-            <option>ROTATION</option>
-            <option>DEPTH</option>
-          </select>
-          <div className="flex flex-col gap-1">
-            <input
-              type="number"
-              min="0"
-              max="10"
-              step="0.1"
-              value={grade}
-              onChange={(e) => handleGradeChange(e.target.value)}
-              placeholder="Grade (0-10)"
-              className={`border bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted focus:outline-none ${
-                gradeError ? 'border-red focus:border-red' : 'border-border focus:border-cyan'
-              }`}
-            />
-            {gradeError && <span className="text-[9px] text-red">{gradeError}</span>}
-          </div>
-        </div>
-        <textarea
-          placeholder="Your scouting analysis..."
-          rows={4}
-          className="border border-border bg-background p-3 text-[11px] text-foreground placeholder:text-muted focus:border-cyan focus:outline-none"
-        />
-        <button className="border border-cyan bg-cyan/10 px-4 py-2 text-[10px] font-bold tracking-wider text-cyan transition-colors hover:bg-cyan/20">
-          SUBMIT_REPORT
-        </button>
-      </div>
+      )}
     </div>
   )
 }
