@@ -58,8 +58,9 @@ export function Navbar() {
             })}
           </div>
 
-          {/* Status + Auth */}
+          {/* Search + Status + Auth */}
           <div className="flex items-center gap-3">
+            <SearchTrigger />
             <div className="hidden items-center gap-1.5 text-[10px] text-muted lg:flex">
               <div className="h-1.5 w-1.5 rounded-full bg-green" />
               <span>SYS_ONLINE</span>
@@ -139,5 +140,22 @@ export function Navbar() {
         </div>
       </div>
     </>
+  )
+}
+
+function SearchTrigger() {
+  const openSearch = () => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
+  }
+
+  return (
+    <button
+      onClick={openSearch}
+      className="hidden items-center gap-2 border border-border px-2.5 py-1 text-[10px] text-muted transition-colors hover:border-cyan hover:text-cyan sm:flex"
+      aria-label="Search prospects"
+    >
+      <span>SEARCH</span>
+      <kbd className="border border-border/50 px-1 py-px text-[8px]">⌘K</kbd>
+    </button>
   )
 }

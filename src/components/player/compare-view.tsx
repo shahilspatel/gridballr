@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import type { Player } from '@/types'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
@@ -31,18 +32,42 @@ const COMP_STATS: CompStat[] = [
 ]
 
 export function CompareView() {
-  const [slugA, setSlugA] = useState<string>('fernando-mendoza')
-  const [slugB, setSlugB] = useState<string>('jeremiyah-love')
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  const [slugA, setSlugA] = useState<string>(searchParams.get('a') ?? 'fernando-mendoza')
+  const [slugB, setSlugB] = useState<string>(searchParams.get('b') ?? 'jeremiyah-love')
+
+  // Update URL when players change (shareable links)
+  useEffect(() => {
+    const params = new URLSearchParams()
+    params.set('a', slugA)
+    params.set('b', slugB)
+    router.replace(`/compare?${params.toString()}`, { scroll: false })
+  }, [slugA, slugB, router])
 
   const playerA = ALL_PROSPECTS.find((p) => p.slug === slugA) as Player | undefined
   const playerB = ALL_PROSPECTS.find((p) => p.slug === slugB) as Player | undefined
 
+  const shareUrl =
+    typeof window !== 'undefined' ? `${window.location.origin}/compare?a=${slugA}&b=${slugB}` : ''
+
   return (
     <div className="flex flex-col gap-6">
-      {/* Player selectors */}
-      <div className="grid grid-cols-2 gap-4">
-        <PlayerSelector value={slugA} onChange={setSlugA} label="PLAYER_A" exclude={slugB} />
-        <PlayerSelector value={slugB} onChange={setSlugB} label="PLAYER_B" exclude={slugA} />
+      {/* Player selectors + share */}
+      <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 gap-4">
+          <PlayerSelector value={slugA} onChange={setSlugA} label="PLAYER_A" exclude={slugB} />
+          <PlayerSelector value={slugB} onChange={setSlugB} label="PLAYER_B" exclude={slugA} />
+        </div>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(shareUrl)
+          }}
+          className="self-end border border-border px-3 py-1 text-[10px] text-muted transition-colors hover:border-cyan hover:text-cyan"
+          aria-label="Copy shareable comparison link"
+        >
+          COPY_SHARE_LINK
+        </button>
       </div>
 
       {playerA && playerB && (

@@ -1,4 +1,10 @@
 {
+  "crons": [
+    {
+      "path": "/api/cron/stale-check",
+      "schedule": "0 9 * * 1"
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",

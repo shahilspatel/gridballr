@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { TerminalHeader } from '@/components/layout/terminal-header'
 import { CompareView } from '@/components/player/compare-view'
 import type { Metadata } from 'next'
@@ -17,7 +18,9 @@ export default function ComparePage() {
         status="READY"
       />
       <div className="mx-auto max-w-5xl px-4 py-6 sm:px-6">
-        <CompareView />
+        <Suspense>
+          <CompareView />
+        </Suspense>
       </div>
     </div>
   )
