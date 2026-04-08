@@ -151,7 +151,6 @@ body {
 @media print {
   nav,
   footer,
-  .print\\:hidden,
   [class*='fixed'] {
     display: none !important;
   }
