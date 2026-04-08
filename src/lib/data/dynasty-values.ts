@@ -100,6 +100,106 @@ export const DYNASTY_ROOKIE_VALUES: DynastyPlayerValue[] = [
   },
 ]
 
+// Dynasty rookie values for 2026 class (superflex — early projections)
+export const DYNASTY_ROOKIE_VALUES_2026: DynastyPlayerValue[] = [
+  {
+    slug: 'fernando-mendoza',
+    name: 'Fernando Mendoza',
+    position: 'QB',
+    value: 9400,
+    trend: 'up',
+    tier: 'Elite',
+  },
+  {
+    slug: 'jeremiyah-love',
+    name: 'Jeremiyah Love',
+    position: 'RB',
+    value: 8200,
+    trend: 'up',
+    tier: 'Elite',
+  },
+  {
+    slug: 'carnell-tate',
+    name: 'Carnell Tate',
+    position: 'WR',
+    value: 7400,
+    trend: 'up',
+    tier: 'Premium',
+  },
+  {
+    slug: 'makai-lemon',
+    name: 'Makai Lemon',
+    position: 'WR',
+    value: 7000,
+    trend: 'up',
+    tier: 'Premium',
+  },
+  {
+    slug: 'kenyon-sadiq',
+    name: 'Kenyon Sadiq',
+    position: 'TE',
+    value: 6200,
+    trend: 'up',
+    tier: 'Strong',
+  },
+  {
+    slug: 'omar-cooper-jr',
+    name: 'Omar Cooper Jr.',
+    position: 'WR',
+    value: 5800,
+    trend: 'stable',
+    tier: 'Strong',
+  },
+  {
+    slug: 'jordyn-tyson',
+    name: 'Jordyn Tyson',
+    position: 'WR',
+    value: 5500,
+    trend: 'up',
+    tier: 'Strong',
+  },
+  {
+    slug: 'denzel-boston',
+    name: 'Denzel Boston',
+    position: 'WR',
+    value: 5200,
+    trend: 'stable',
+    tier: 'Solid',
+  },
+  {
+    slug: 'ty-simpson',
+    name: 'Ty Simpson',
+    position: 'QB',
+    value: 4800,
+    trend: 'stable',
+    tier: 'Solid',
+  },
+  {
+    slug: 'jadarian-price',
+    name: 'Jadarian Price',
+    position: 'RB',
+    value: 4500,
+    trend: 'stable',
+    tier: 'Solid',
+  },
+  {
+    slug: 'oscar-delp',
+    name: 'Oscar Delp',
+    position: 'TE',
+    value: 4000,
+    trend: 'up',
+    tier: 'Moderate',
+  },
+  {
+    slug: 'demond-claiborne',
+    name: 'Demond Claiborne',
+    position: 'RB',
+    value: 3800,
+    trend: 'stable',
+    tier: 'Moderate',
+  },
+]
+
 // Draft pick values (superflex)
 export const PICK_VALUES: Record<string, number> = {
   '1.01': 9500,

@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import {
   DYNASTY_ROOKIE_VALUES,
+  DYNASTY_ROOKIE_VALUES_2026,
   ESTABLISHED_PLAYER_VALUES,
   PICK_VALUES,
   type DynastyPlayerValue,
@@ -16,7 +17,11 @@ type TradeAsset = {
   position?: string
 }
 
-const ALL_PLAYERS = [...ESTABLISHED_PLAYER_VALUES, ...DYNASTY_ROOKIE_VALUES]
+const ALL_PLAYERS = [
+  ...ESTABLISHED_PLAYER_VALUES,
+  ...DYNASTY_ROOKIE_VALUES_2026,
+  ...DYNASTY_ROOKIE_VALUES,
+]
 const ALL_PICKS = Object.entries(PICK_VALUES).map(([pick, value]) => ({
   id: `pick-${pick}`,
   name: `2026 ${pick}`,

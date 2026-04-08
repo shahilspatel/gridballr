@@ -46,11 +46,11 @@ export default function DynastyPage() {
           </div>
           <div className="divide-y divide-border/50">
             {[
-              { name: 'Shedeur Sanders', change: '+12', direction: 'up' },
-              { name: 'Cam Ward', change: '+8', direction: 'up' },
-              { name: 'Travis Hunter', change: '+15', direction: 'up' },
-              { name: 'Ashton Jeanty', change: '+5', direction: 'up' },
-              { name: 'Tetairoa McMillan', change: '-3', direction: 'down' },
+              { name: 'Fernando Mendoza', change: '+18', direction: 'up' },
+              { name: 'Jeremiyah Love', change: '+12', direction: 'up' },
+              { name: 'Carnell Tate', change: '+9', direction: 'up' },
+              { name: 'Makai Lemon', change: '+7', direction: 'up' },
+              { name: 'Kenyon Sadiq', change: '+5', direction: 'up' },
             ].map((item) => (
               <div key={item.name} className="flex items-center justify-between px-4 py-2.5">
                 <span className="text-xs text-foreground">{item.name}</span>

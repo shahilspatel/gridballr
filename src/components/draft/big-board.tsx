@@ -34,12 +34,18 @@ export function BigBoard({ players }: { players: Player[] }) {
       {/* Filters */}
       <div className="border-b border-border bg-background px-4 py-3 sm:px-6">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex flex-wrap items-center gap-1">
+          <div
+            className="flex flex-wrap items-center gap-1"
+            role="group"
+            aria-label="Position filters"
+          >
             <span className="mr-1 text-[10px] text-muted">POS:</span>
             {POSITIONS.map((pos) => (
               <button
                 key={pos}
                 onClick={() => setPosition(pos)}
+                aria-pressed={position === pos}
+                aria-label={`Filter by ${pos === 'ALL' ? 'all positions' : pos}`}
                 className={`px-2 py-1 text-[10px] font-medium tracking-wide transition-colors ${
                   position === pos
                     ? 'bg-cyan/10 text-cyan border border-cyan/30'
@@ -58,6 +64,7 @@ export function BigBoard({ players }: { players: Player[] }) {
             <input
               type="text"
               placeholder="SEARCH_PROSPECT..."
+              aria-label="Search prospects by name or school"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full border border-border bg-surface py-1.5 pl-6 pr-3 text-[11px] text-foreground placeholder:text-muted focus:border-cyan focus:outline-none sm:w-64"
@@ -95,7 +102,10 @@ export function BigBoard({ players }: { players: Player[] }) {
 
         <div className="mt-8 flex items-center justify-center gap-2 text-[10px] text-muted">
           <div className="h-1.5 w-1.5 rounded-full bg-cyan" />
-          <span>END_OF_BOARD // {filtered.length} PROSPECTS // DRAFT_YEAR:2025</span>
+          <span>
+            END_OF_BOARD // {filtered.length} PROSPECTS // DRAFT_YEAR:
+            {players[0]?.draft_year ?? 2026}
+          </span>
         </div>
       </div>
     </>

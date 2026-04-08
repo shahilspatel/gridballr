@@ -44,13 +44,18 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Company */}
+          {/* Account & Legal */}
           <div className="flex flex-col gap-2">
             <span className="text-[10px] font-bold tracking-widest text-muted">ACCOUNT</span>
             <div className="flex flex-col gap-1.5">
               <FooterLink href="/pricing" label="Pricing" />
               <FooterLink href="/login" label="Login" />
               <FooterLink href="/signup" label="Sign Up" />
+            </div>
+            <span className="mt-2 text-[10px] font-bold tracking-widest text-muted">LEGAL</span>
+            <div className="flex flex-col gap-1.5">
+              <FooterLink href="/terms" label="Terms of Service" />
+              <FooterLink href="/privacy" label="Privacy Policy" />
             </div>
           </div>
         </div>
