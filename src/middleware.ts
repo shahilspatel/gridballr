@@ -44,16 +44,19 @@ export async function middleware(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname
 
-  // Protect premium routes — redirect to login if not authenticated
-  const isPremium = PREMIUM_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(route + '/'),
-  )
-
-  if (isPremium && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    url.searchParams.set('redirect', pathname)
-    return NextResponse.redirect(url)
+  // Premium route protection — DISABLED for pre-launch open access
+  // To re-enable: remove the `false &&` below
+  // eslint-disable-next-line no-constant-condition
+  if (false && !user) {
+    const isPremium = PREMIUM_ROUTES.some(
+      (route) => pathname === route || pathname.startsWith(route + '/'),
+    )
+    if (isPremium) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      url.searchParams.set('redirect', pathname)
+      return NextResponse.redirect(url)
+    }
   }
 
   // Redirect authenticated users away from auth pages
