@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
 import type { Player } from '@/types'
@@ -151,9 +152,12 @@ function PlayerHeader({ player }: { player: Player }) {
   return (
     <div className="border border-border bg-surface p-4">
       <div className="flex items-center gap-2">
-        <span className="text-lg font-bold text-foreground">
+        <Link
+          href={`/players/${player.slug}`}
+          className="text-lg font-bold text-foreground transition-colors hover:text-cyan"
+        >
           {player.first_name} {player.last_name}
-        </span>
+        </Link>
         <span
           className="border px-1.5 py-0.5 text-[10px] font-bold"
           style={{ color: posColor, borderColor: posColor }}
