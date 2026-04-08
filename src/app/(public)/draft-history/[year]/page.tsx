@@ -74,7 +74,16 @@ export default async function DraftHistoryPage({ params }: Props) {
                   {String(pick.pick).padStart(2, '0')}
                 </span>
                 <span className="text-xs font-bold text-foreground">{pick.team}</span>
-                <span className="text-xs text-foreground">{pick.player}</span>
+                <span className="text-xs text-foreground hover:text-cyan transition-colors">
+                  <Link
+                    href={`/players/${pick.player
+                      .toLowerCase()
+                      .replace(/[^a-z0-9]+/g, '-')
+                      .replace(/(^-|-$)/g, '')}`}
+                  >
+                    {pick.player}
+                  </Link>
+                </span>
                 <span
                   className="text-[10px] font-bold"
                   style={{ color: getPositionColor(pick.position) }}

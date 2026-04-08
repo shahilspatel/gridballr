@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { BigBoard } from '@/components/draft/big-board'
 import type { Player } from '@/types'
 
@@ -17,6 +18,10 @@ export function DraftYearToggle({ years, defaultYear, allPlayers, labels }: Draf
   const players = (allPlayers[activeYear] ?? []).sort(
     (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
   )
+
+  const handlePrint = () => {
+    window.print()
+  }
 
   return (
     <>
@@ -59,10 +64,20 @@ export function DraftYearToggle({ years, defaultYear, allPlayers, labels }: Draf
               </span>
             )}
             {labels[activeYear] === 'COMPLETED' && (
-              <span className="border border-green/30 bg-green/5 px-1.5 py-0.5 text-[8px] font-bold text-green">
-                FINAL BOARD
-              </span>
+              <Link
+                href={`/draft-history/${activeYear}`}
+                className="border border-green/30 bg-green/5 px-1.5 py-0.5 text-[8px] font-bold text-green hover:bg-green/10 transition-colors"
+              >
+                VIEW DRAFT RESULTS
+              </Link>
             )}
+            <button
+              onClick={handlePrint}
+              className="hidden border border-border px-2 py-0.5 text-[9px] text-muted transition-colors hover:border-cyan hover:text-cyan sm:block print:hidden"
+              aria-label="Print big board"
+            >
+              EXPORT
+            </button>
           </div>
         </div>
       </div>

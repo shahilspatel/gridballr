@@ -29,6 +29,7 @@ export function Footer() {
               <FooterLink href="/compare" label="Compare Engine" />
               <FooterLink href="/film-terminal" label="Film Terminal" />
               <FooterLink href="/scouts" label="Scouts Community" />
+              <FooterLink href="/draft-history/2025" label="Draft History" />
             </div>
           </div>
 
