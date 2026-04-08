@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { AVAILABLE_YEARS } from '@/lib/data/draft-history'
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -27,7 +28,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: path === '' ? 1 : 0.8,
   }))
 
-  const playerPages = SEED_PLAYERS.map((player) => ({
+  const playerPages = [...SEED_PLAYERS_2026, ...SEED_PLAYERS].map((player) => ({
     url: `${baseUrl}/players/${player.slug}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,

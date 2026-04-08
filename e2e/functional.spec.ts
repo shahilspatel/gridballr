@@ -4,17 +4,16 @@ test.describe('Functional Tests — Core User Flows', () => {
   test('homepage filters work — filter by QB', async ({ page }) => {
     await page.goto('/')
     await page.click('text=QB')
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
-    await expect(page.locator('text=Cam Ward')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
     // Non-QBs should be hidden
-    await expect(page.locator('text=Travis Hunter')).not.toBeVisible()
+    await expect(page.locator('text=Jeremiyah Love')).not.toBeVisible()
   })
 
   test('homepage search works', async ({ page }) => {
     await page.goto('/')
-    await page.fill('input[placeholder="SEARCH_PROSPECT..."]', 'Hunter')
-    await expect(page.locator('text=Travis Hunter')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).not.toBeVisible()
+    await page.fill('input[placeholder="SEARCH_PROSPECT..."]', 'Love')
+    await expect(page.locator('text=Jeremiyah Love')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).not.toBeVisible()
   })
 
   test('stat matrix sorting works', async ({ page }) => {
@@ -32,7 +31,7 @@ test.describe('Functional Tests — Core User Flows', () => {
     const selectB = page.locator('select').nth(1)
     await selectB.selectOption({ index: 2 })
     // Verify the select changed (don't assert visible text since options exist in both dropdowns)
-    await expect(selectB).not.toHaveValue('cam-ward')
+    await expect(selectB).not.toHaveValue('jeremiyah-love')
   })
 
   test('mock draft — start and complete draft', async ({ page }) => {
@@ -43,7 +42,7 @@ test.describe('Functional Tests — Core User Flows', () => {
     await expect(page.locator('text=YOUR PICK')).toBeVisible()
     // Pick a player
     await page.locator('text=AVAILABLE_PROSPECTS').waitFor()
-    const firstPlayer = page.locator('button').filter({ hasText: 'Shedeur' }).first()
+    const firstPlayer = page.locator('button').filter({ hasText: 'Mendoza' }).first()
     await firstPlayer.click()
     // Draft should auto-complete (AI picks rest)
     await expect(page.locator('text=DRAFT_COMPLETE')).toBeVisible({ timeout: 10000 })

@@ -4,14 +4,14 @@ test.describe('Smoke Tests — All Pages Load', () => {
   test('homepage loads with big board', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('h1:has-text("BIG BOARD")')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
     await expect(page.getByRole('link', { name: 'GRIDBALLR' })).toBeVisible()
   })
 
   test('stat matrix loads with prospect table', async ({ page }) => {
     await page.goto('/stats')
     await expect(page.locator('text=STAT_MATRIX')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
   })
 
   test('compare engine loads with two players', async ({ page }) => {

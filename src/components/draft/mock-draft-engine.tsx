@@ -3,8 +3,14 @@
 import { useState, useCallback } from 'react'
 import type { Player } from '@/types'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { NFL_TEAM_DATA, positionMatchesNeed } from '@/lib/data/nfl-teams'
 import { getPositionColor } from '@/lib/utils/format'
+
+const DRAFT_CLASSES: Record<number, Player[]> = {
+  2026: SEED_PLAYERS_2026 as Player[],
+  2025: SEED_PLAYERS as Player[],
+}
 
 interface DraftPick {
   pickNumber: number
@@ -18,13 +24,14 @@ type DraftPhase = 'setup' | 'drafting' | 'complete'
 
 export function MockDraftEngine() {
   const [phase, setPhase] = useState<DraftPhase>('setup')
+  const [draftYear, setDraftYear] = useState(2026)
   const [userTeam, setUserTeam] = useState('NYG')
   const [picks, setPicks] = useState<DraftPick[]>([])
   const [currentPick, setCurrentPick] = useState(0)
   const [availablePlayers, setAvailablePlayers] = useState<Player[]>([])
 
   const initDraft = useCallback(() => {
-    const allPlayers = (SEED_PLAYERS as Player[]).sort(
+    const allPlayers = (DRAFT_CLASSES[draftYear] ?? []).sort(
       (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
     )
     setAvailablePlayers(allPlayers)
@@ -40,9 +47,8 @@ export function MockDraftEngine() {
     setCurrentPick(0)
     setPhase('drafting')
 
-    // Auto-pick until user's turn
     autoPickUntilUser(draftPicks, allPlayers, 0)
-  }, [userTeam])
+  }, [userTeam, draftYear])
 
   function autoPickUntilUser(currentPicks: DraftPick[], available: Player[], startIdx: number) {
     const newPicks = [...currentPicks]
@@ -71,12 +77,10 @@ export function MockDraftEngine() {
   function aiSelectPlayer(available: Player[], needs: string[]): Player | null {
     if (available.length === 0) return null
 
-    // Find best available player that matches a need
     for (const need of needs) {
       const match = available.find((p) => positionMatchesNeed(p.position, need))
       if (match) return match
     }
-    // BPA fallback
     return available[0]
   }
 
@@ -110,6 +114,33 @@ export function MockDraftEngine() {
         <div className="border border-border bg-surface p-6">
           <h2 className="mb-4 text-xs font-bold tracking-widest text-cyan">DRAFT_CONFIGURATION</h2>
           <div className="flex flex-col gap-4">
+            {/* Draft Year Selection */}
+            <div>
+              <label className="mb-1 block text-[10px] font-bold tracking-widest text-muted">
+                DRAFT YEAR
+              </label>
+              <div className="flex items-center gap-2">
+                {[2026, 2025].map((year) => (
+                  <button
+                    key={year}
+                    onClick={() => setDraftYear(year)}
+                    className={`px-3 py-1.5 text-[11px] font-bold tracking-wider transition-colors ${
+                      draftYear === year
+                        ? 'bg-cyan/10 text-cyan border border-cyan/30'
+                        : 'text-muted hover:text-foreground border border-border'
+                    }`}
+                  >
+                    {year}
+                    <span
+                      className={`ml-1.5 text-[8px] ${draftYear === year ? 'text-cyan/70' : 'text-muted'}`}
+                    >
+                      {year === 2026 ? 'UPCOMING' : 'COMPLETED'}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             <div>
               <label className="mb-1 block text-[10px] font-bold tracking-widest text-muted">
                 SELECT YOUR TEAM
@@ -128,6 +159,8 @@ export function MockDraftEngine() {
             </div>
             <div className="text-[10px] text-muted">
               <span className="text-cyan">MODE:</span> SOLO // 1 ROUND // 32 PICKS // BPA + NEED AI
+              // <span className="text-cyan">{draftYear}</span> CLASS (
+              {(DRAFT_CLASSES[draftYear] ?? []).length} PROSPECTS)
             </div>
             <button
               onClick={initDraft}
@@ -148,6 +181,7 @@ export function MockDraftEngine() {
           <div className="flex items-center gap-2 text-[10px]">
             <div className="h-1.5 w-1.5 rounded-full bg-green" />
             <span className="text-green">DRAFT_COMPLETE</span>
+            <span className="text-muted">// {draftYear} CLASS</span>
           </div>
           <button
             onClick={resetDraft}
@@ -161,12 +195,10 @@ export function MockDraftEngine() {
     )
   }
 
-  // Drafting phase
   const isUserPick = picks[currentPick]?.isUser
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Status bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-[10px]">
           <span className="text-muted">
@@ -174,6 +206,9 @@ export function MockDraftEngine() {
           </span>
           <span className="text-muted">
             TEAM: <span className="text-foreground">{picks[currentPick]?.team}</span>
+          </span>
+          <span className="text-muted">
+            YEAR: <span className="text-cyan">{draftYear}</span>
           </span>
           {isUserPick && (
             <span className="border border-green/30 bg-green/10 px-2 py-0.5 text-green">
@@ -190,7 +225,6 @@ export function MockDraftEngine() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        {/* Draft board */}
         <div className="border border-border bg-surface">
           <div className="border-b border-border bg-surface-2 px-4 py-2">
             <span className="text-[10px] font-bold tracking-widest text-cyan">DRAFT_BOARD</span>
@@ -232,7 +266,6 @@ export function MockDraftEngine() {
           </div>
         </div>
 
-        {/* Available players (only show when it's user's pick) */}
         {isUserPick && (
           <div className="border border-border bg-surface">
             <div className="border-b border-border bg-surface-2 px-4 py-2">

@@ -1,6 +1,7 @@
 import { TerminalHeader } from '@/components/layout/terminal-header'
-import { StatMatrixTable } from '@/components/stats/stat-matrix-table'
+import { StatMatrixWithYears } from '@/components/stats/stat-matrix-with-years'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -10,8 +11,6 @@ export const metadata: Metadata = {
 }
 
 export default function StatsPage() {
-  const players = SEED_PLAYERS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
-
   return (
     <div>
       <TerminalHeader
@@ -20,7 +19,12 @@ export default function StatsPage() {
         status="DATA_LOADED"
       />
       <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
-        <StatMatrixTable players={players as any} />
+        <StatMatrixWithYears
+          allPlayers={{
+            2026: SEED_PLAYERS_2026 as any,
+            2025: SEED_PLAYERS as any,
+          }}
+        />
       </div>
     </div>
   )

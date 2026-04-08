@@ -1,18 +1,33 @@
 import { TerminalHeader } from '@/components/layout/terminal-header'
 import { BigBoard } from '@/components/draft/big-board'
+import { DraftYearToggle } from '@/components/draft/draft-year-toggle'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import type { Player } from '@/types'
 
+const DRAFT_YEARS = {
+  2026: {
+    players: SEED_PLAYERS_2026 as Player[],
+    label: 'UPCOMING',
+    status: 'PROJECTIONS',
+  },
+  2025: {
+    players: SEED_PLAYERS as Player[],
+    label: 'COMPLETED',
+    status: 'FINAL',
+  },
+}
+
 export default function HomePage() {
-  const players = (SEED_PLAYERS as Player[]).sort(
-    (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
-  )
+  const defaultYear = 2026
+  const data = DRAFT_YEARS[defaultYear]
+  const players = data.players.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
 
   return (
     <div>
       <TerminalHeader
         title="BIG_BOARD"
-        subtitle="2025 NFL Draft Consensus Rankings"
+        subtitle="NFL Draft Consensus Rankings"
         status="BOARD_ACTIVE"
       />
 
@@ -28,29 +43,22 @@ export default function HomePage() {
               <span className="text-green">ALL_SYSTEMS_OPERATIONAL</span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              2025 NFL DRAFT <span className="text-cyan glow">BIG BOARD</span>
+              NFL DRAFT <span className="text-cyan glow">BIG BOARD</span>
             </h1>
             <p className="max-w-lg text-sm text-muted">
               Consensus prospect rankings powered by advanced analytics, scouting reports, and
               combine data. Updated in real-time.
             </p>
-            <div className="mt-2 flex items-center gap-4 text-[10px] text-muted">
-              <span>
-                <span className="text-cyan">{players.length}</span> PROSPECTS LOADED
-              </span>
-              <span>
-                <span className="text-cyan">2025</span> DRAFT_CLASS
-              </span>
-              <span>
-                LAST_SYNC:{' '}
-                <span className="text-green">{new Date().toISOString().split('T')[0]}</span>
-              </span>
-            </div>
           </div>
         </div>
       </div>
 
-      <BigBoard players={players} />
+      <DraftYearToggle
+        years={[2026, 2025]}
+        defaultYear={defaultYear}
+        allPlayers={{ 2026: DRAFT_YEARS[2026].players, 2025: DRAFT_YEARS[2025].players }}
+        labels={{ 2026: 'UPCOMING', 2025: 'COMPLETED' }}
+      />
     </div>
   )
 }

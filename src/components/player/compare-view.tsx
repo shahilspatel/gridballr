@@ -3,7 +3,10 @@
 import { useState, useMemo } from 'react'
 import type { Player } from '@/types'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { formatHeight, formatWeight, getPositionColor, getTierColor } from '@/lib/utils/format'
+
+const ALL_PROSPECTS = [...(SEED_PLAYERS_2026 as Player[]), ...(SEED_PLAYERS as Player[])]
 
 type CompStat = {
   label: string
@@ -28,11 +31,11 @@ const COMP_STATS: CompStat[] = [
 ]
 
 export function CompareView() {
-  const [slugA, setSlugA] = useState<string>('shedeur-sanders')
-  const [slugB, setSlugB] = useState<string>('cam-ward')
+  const [slugA, setSlugA] = useState<string>('fernando-mendoza')
+  const [slugB, setSlugB] = useState<string>('jeremiyah-love')
 
-  const playerA = SEED_PLAYERS.find((p) => p.slug === slugA) as Player | undefined
-  const playerB = SEED_PLAYERS.find((p) => p.slug === slugB) as Player | undefined
+  const playerA = ALL_PROSPECTS.find((p) => p.slug === slugA) as Player | undefined
+  const playerB = ALL_PROSPECTS.find((p) => p.slug === slugB) as Player | undefined
 
   return (
     <div className="flex flex-col gap-6">
@@ -99,13 +102,17 @@ function PlayerSelector({
         onChange={(e) => onChange(e.target.value)}
         className="border border-border bg-surface px-3 py-2 text-xs text-foreground focus:border-cyan focus:outline-none"
       >
-        {SEED_PLAYERS.filter((p) => p.slug !== exclude)
-          .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
-          .map((p) => (
-            <option key={p.slug} value={p.slug}>
-              #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position} — {p.school}
-            </option>
-          ))}
+        {[2026, 2025].map((year) => (
+          <optgroup key={year} label={`${year} Draft Class`}>
+            {ALL_PROSPECTS.filter((p) => p.slug !== exclude && p.draft_year === year)
+              .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
+              .map((p) => (
+                <option key={p.slug} value={p.slug}>
+                  #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position} — {p.school}
+                </option>
+              ))}
+          </optgroup>
+        ))}
       </select>
     </div>
   )

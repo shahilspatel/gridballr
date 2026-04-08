@@ -2,16 +2,19 @@
 
 import { useState } from 'react'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
+import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { FILM_CLIPS, getClipsForPlayer } from '@/lib/data/film-clips'
 import { getPositionColor } from '@/lib/utils/format'
 import type { Player } from '@/types'
 
+const ALL_PROSPECTS = [...(SEED_PLAYERS_2026 as Player[]), ...(SEED_PLAYERS as Player[])]
+
 export function FilmTerminalView() {
-  const [selectedSlug, setSelectedSlug] = useState('shedeur-sanders')
+  const [selectedSlug, setSelectedSlug] = useState('fernando-mendoza')
   const [activeClipIdx, setActiveClipIdx] = useState(0)
   const [notes, setNotes] = useState('')
 
-  const player = SEED_PLAYERS.find((p) => p.slug === selectedSlug) as Player | undefined
+  const player = ALL_PROSPECTS.find((p) => p.slug === selectedSlug) as Player | undefined
   const clips = getClipsForPlayer(selectedSlug)
   const activeClip = clips[activeClipIdx]
 
@@ -28,13 +31,13 @@ export function FilmTerminalView() {
           }}
           className="border border-border bg-surface px-3 py-1.5 text-xs text-foreground focus:border-cyan focus:outline-none"
         >
-          {(SEED_PLAYERS as Player[])
-            .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
-            .map((p) => (
+          {ALL_PROSPECTS.sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999)).map(
+            (p) => (
               <option key={p.slug} value={p.slug}>
                 #{p.big_board_rank} {p.first_name} {p.last_name} — {p.position}
               </option>
-            ))}
+            ),
+          )}
         </select>
         {player && (
           <span

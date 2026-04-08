@@ -28,13 +28,13 @@ test.describe('Critical User Flows', () => {
   test('big board with prospect ranking', async ({ page }) => {
     await page.goto('/')
     await expect(page.locator('h1:has-text("BIG BOARD")')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
   })
 
   test('stat matrix loads', async ({ page }) => {
     await page.goto('/stats')
     await expect(page.locator('text=STAT_MATRIX')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
   })
 
   test('compare engine loads', async ({ page }) => {
