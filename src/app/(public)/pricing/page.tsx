@@ -23,7 +23,6 @@ export default function PricingPage() {
       const { sessionUrl } = await response.json()
       if (sessionUrl) window.location.href = sessionUrl
     } catch (error) {
-      console.error('Checkout error:', error)
       alert('Failed to start checkout. Please try again.')
     } finally {
       setLoading(false)

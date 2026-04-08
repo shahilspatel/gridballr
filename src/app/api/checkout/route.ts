@@ -18,6 +18,13 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing priceId' }, { status: 400 })
   }
 
+  // Validate priceId against allowed values
+  const { PLANS } = await import('@/lib/stripe/plans')
+  const allowedPriceIds = [PLANS.pro.stripePriceIdMonthly, PLANS.pro.stripePriceIdAnnual]
+  if (!allowedPriceIds.includes(priceId)) {
+    return NextResponse.json({ error: 'Invalid priceId' }, { status: 400 })
+  }
+
   // Check if user already has a Stripe customer
   const { data: profile } = await supabase
     .from('profiles')

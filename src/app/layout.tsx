@@ -13,6 +13,7 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://gridballr.com'),
   title: {
     default: 'GridBallr — NFL Draft Intelligence Platform',
     template: '%s | GridBallr',
@@ -33,11 +34,20 @@ export const metadata: Metadata = {
     description: 'Advanced NFL draft scouting, analytics, and prospect intelligence.',
     siteName: 'GridBallr',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'GridBallr — NFL Draft Intelligence Platform',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'GridBallr — NFL Draft Intelligence Platform',
     description: 'Advanced NFL draft scouting, analytics, and prospect intelligence.',
+    images: ['/og-image.png'],
   },
 }
 
@@ -65,12 +75,6 @@ export default function RootLayout({
                 price: '0',
                 priceCurrency: 'USD',
                 name: 'Free Tier',
-              },
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '5',
-                bestRating: '5',
-                ratingCount: '1',
               },
             }),
           }}
