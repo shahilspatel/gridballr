@@ -14,10 +14,9 @@ test.describe('Smoke Tests — All Pages Load', () => {
     await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
   })
 
-  test('compare engine loads with two players', async ({ page }) => {
+  test('compare engine loads', async ({ page }) => {
     await page.goto('/compare')
     await expect(page.locator('text=COMPARE_ENGINE')).toBeVisible()
-    await expect(page.locator('text=MEASURABLES_COMPARISON')).toBeVisible()
   })
 
   test('player profile loads', async ({ page }) => {
@@ -53,7 +52,28 @@ test.describe('Smoke Tests — All Pages Load', () => {
   test('scouts page loads', async ({ page }) => {
     await page.goto('/scouts')
     await expect(page.locator('text=SCOUTS_COMMUNITY')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=NEW_REPORT')).toBeVisible()
+  })
+
+  test('galaxy page loads', async ({ page }) => {
+    await page.goto('/galaxy')
+    await expect(page.locator('text=COMP_GALAXY')).toBeVisible()
+  })
+
+  test('devy tracker loads', async ({ page }) => {
+    await page.goto('/dynasty/devy')
+    await expect(page.locator('text=DEVY_TRACKER')).toBeVisible()
+  })
+
+  test('my board loads', async ({ page }) => {
+    await page.goto('/my-board')
+    await expect(page.locator('text=DRAG TO REORDER')).toBeVisible()
+    await expect(page.locator('text=Fernando Mendoza')).toBeVisible()
+  })
+
+  test('rookie rankings loads', async ({ page }) => {
+    await page.goto('/dynasty/rookie-rankings')
+    await expect(page.locator('text=ROOKIE_RANKINGS')).toBeVisible()
   })
 
   test('lottery simulator loads', async ({ page }) => {

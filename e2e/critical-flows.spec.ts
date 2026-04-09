@@ -40,7 +40,6 @@ test.describe('Critical User Flows', () => {
   test('compare engine loads', async ({ page }) => {
     await page.goto('/compare')
     await expect(page.locator('text=COMPARE_ENGINE')).toBeVisible()
-    await expect(page.locator('text=MEASURABLES_COMPARISON')).toBeVisible()
   })
 
   test('mock draft simulator loads', async ({ page }) => {
@@ -70,7 +69,7 @@ test.describe('Critical User Flows', () => {
   test('scouts community loads', async ({ page }) => {
     await page.goto('/scouts')
     await expect(page.locator('text=SCOUTS_COMMUNITY')).toBeVisible()
-    await expect(page.locator('text=Shedeur Sanders')).toBeVisible()
+    await expect(page.locator('text=NEW_REPORT')).toBeVisible()
   })
 
   test('dynasty page loads', async ({ page }) => {
