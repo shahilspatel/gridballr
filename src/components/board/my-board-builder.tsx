@@ -1,14 +1,51 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { getPositionColor } from '@/lib/utils/format'
 import { useToast } from '@/components/ui/toast'
+import { createClient } from '@/lib/supabase/client'
 import type { Player } from '@/types'
 
 const INITIAL_PLAYERS = (SEED_PLAYERS_2026 as Player[]).sort(
   (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
 )
+
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error'
+type RankingEntry = { slug: string; notes: string | null }
+
+const LS_KEY = 'gridballr_my_board'
+
+function boardToRankings(board: Player[], notes: Record<string, string>): RankingEntry[] {
+  return board.map((p) => ({ slug: p.slug, notes: notes[p.slug] || null }))
+}
+
+function rankingsToBoard(
+  rankings: RankingEntry[],
+  allPlayers: Player[],
+): { board: Player[]; notes: Record<string, string> } {
+  const playerMap = new Map(allPlayers.map((p) => [p.slug, p]))
+  const board: Player[] = []
+  const notes: Record<string, string> = {}
+
+  for (const entry of rankings) {
+    const player = playerMap.get(entry.slug)
+    if (player) {
+      board.push(player)
+      if (entry.notes) notes[entry.slug] = entry.notes
+      playerMap.delete(entry.slug)
+    }
+  }
+
+  // Append any new players not in saved rankings
+  for (const player of INITIAL_PLAYERS) {
+    if (playerMap.has(player.slug)) {
+      board.push(player)
+    }
+  }
+
+  return { board, notes }
+}
 
 export function MyBoardBuilder() {
   const { toast } = useToast()
@@ -16,6 +53,114 @@ export function MyBoardBuilder() {
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [editingNote, setEditingNote] = useState<string | null>(null)
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle')
+  const [userId, setUserId] = useState<string | null>(null)
+  const [boardId, setBoardId] = useState<string | null>(null)
+  const [loaded, setLoaded] = useState(false)
+  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null)
+
+  function getSupabase() {
+    if (!supabaseRef.current) supabaseRef.current = createClient()
+    return supabaseRef.current
+  }
+
+  // Load board on mount
+  useEffect(() => {
+    async function load() {
+      const supabase = getSupabase()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
+
+      if (user) {
+        setUserId(user.id)
+        const { data } = await supabase
+          .from('draft_boards')
+          .select('id, rankings')
+          .eq('user_id', user.id)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .single()
+
+        if (data?.rankings) {
+          const { board: restored, notes: restoredNotes } = rankingsToBoard(
+            data.rankings as RankingEntry[],
+            INITIAL_PLAYERS,
+          )
+          setBoard(restored)
+          setNotes(restoredNotes)
+          setBoardId(data.id)
+        }
+      } else {
+        // Anonymous: load from localStorage
+        try {
+          const stored = localStorage.getItem(LS_KEY)
+          if (stored) {
+            const rankings = JSON.parse(stored) as RankingEntry[]
+            const { board: restored, notes: restoredNotes } = rankingsToBoard(
+              rankings,
+              INITIAL_PLAYERS,
+            )
+            setBoard(restored)
+            setNotes(restoredNotes)
+          }
+        } catch {
+          // Ignore corrupt localStorage
+        }
+      }
+      setLoaded(true)
+    }
+    load()
+  }, [])
+
+  // Auto-save with debounce
+  useEffect(() => {
+    if (!loaded) return
+
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+
+    saveTimeoutRef.current = setTimeout(async () => {
+      const rankings = boardToRankings(board, notes)
+
+      if (userId) {
+        const supabase = getSupabase()
+        setSaveStatus('saving')
+        try {
+          if (boardId) {
+            const { error } = await supabase
+              .from('draft_boards')
+              .update({ rankings, updated_at: new Date().toISOString() })
+              .eq('id', boardId)
+            if (error) throw error
+          } else {
+            const { data, error } = await supabase
+              .from('draft_boards')
+              .insert({ user_id: userId, name: 'My Board', rankings })
+              .select('id')
+              .single()
+            if (error) throw error
+            if (data) setBoardId(data.id)
+          }
+          setSaveStatus('saved')
+        } catch {
+          setSaveStatus('error')
+        }
+      } else {
+        // Anonymous: save to localStorage
+        try {
+          localStorage.setItem(LS_KEY, JSON.stringify(rankings))
+          setSaveStatus('saved')
+        } catch {
+          setSaveStatus('error')
+        }
+      }
+    }, 1500)
+
+    return () => {
+      if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current)
+    }
+  }, [board, notes, loaded, userId, boardId])
 
   const handleDragStart = (idx: number) => {
     setDragIdx(idx)
@@ -50,9 +195,21 @@ export function MyBoardBuilder() {
     setBoard(newBoard)
   }
 
-  const resetBoard = () => {
+  const resetBoard = async () => {
     setBoard(INITIAL_PLAYERS)
     setNotes({})
+    if (userId && boardId) {
+      await getSupabase()
+        .from('draft_boards')
+        .update({
+          rankings: boardToRankings(INITIAL_PLAYERS, {}),
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', boardId)
+    } else {
+      localStorage.removeItem(LS_KEY)
+    }
+    setSaveStatus('saved')
     toast('BOARD_RESET // Default rankings restored')
   }
 
@@ -75,6 +232,23 @@ export function MyBoardBuilder() {
           <span className="text-cyan">{board.length}</span> PROSPECTS // DRAG TO REORDER
         </div>
         <div className="flex items-center gap-2">
+          {saveStatus !== 'idle' && (
+            <span
+              className={`text-[9px] font-bold tracking-widest ${
+                saveStatus === 'saving'
+                  ? 'text-yellow'
+                  : saveStatus === 'saved'
+                    ? 'text-green'
+                    : 'text-red'
+              }`}
+            >
+              {saveStatus === 'saving'
+                ? 'SAVING...'
+                : saveStatus === 'saved'
+                  ? 'SAVED'
+                  : 'SAVE_ERROR'}
+            </span>
+          )}
           <button
             onClick={exportBoard}
             className="border border-border px-3 py-1.5 text-[10px] font-bold text-muted transition-colors hover:border-cyan hover:text-cyan"

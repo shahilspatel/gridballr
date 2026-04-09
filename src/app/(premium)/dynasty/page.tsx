@@ -34,8 +34,7 @@ export default function DynastyPage() {
             title="DEVY_TRACKER"
             description="Track college prospects 2-3 years before the draft. Get ahead of your league."
             href="/dynasty/devy"
-            status="COMING_SOON"
-            locked
+            status="AVAILABLE"
           />
         </div>
 
