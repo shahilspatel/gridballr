@@ -34,6 +34,10 @@ export type Badge =
   | 'YAC_MONSTER'
   | 'FIELD_GENERAL'
 
+/**
+ * A Player as stored in the database (has a real UUID `id`).
+ * Components that receive players from Supabase queries use this type.
+ */
 export interface Player {
   id: string
   slug: string
@@ -68,6 +72,14 @@ export interface Player {
   weaknesses: string[]
   player_comp: string | null
 }
+
+/**
+ * A seed prospect loaded from the in-repo JSON data.
+ * These have no database `id` — they're identified by `slug`.
+ * Anything that pulls from SEED_PLAYERS / SEED_PLAYERS_2026 is a SeedPlayer.
+ * Use `Player` only for rows fetched from Supabase.
+ */
+export type SeedPlayer = Omit<Player, 'id'>
 
 export interface PlayerSeason {
   id: string

@@ -5,7 +5,8 @@ import Link from 'next/link'
 import type { Player } from '@/types'
 import { formatHeight, getPositionColor } from '@/lib/utils/format'
 
-type SortKey = keyof Player | 'name'
+type SeedPlayer = Omit<Player, 'id'>
+type SortKey = keyof SeedPlayer | 'name'
 type SortDir = 'asc' | 'desc'
 
 const COLUMNS: { key: SortKey; label: string; width: string }[] = [
@@ -27,7 +28,7 @@ const COLUMNS: { key: SortKey; label: string; width: string }[] = [
 
 const POSITION_FILTERS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'OT', 'IOL', 'EDGE', 'DL', 'LB', 'CB', 'S']
 
-export function StatMatrixTable({ players }: { players: Player[] }) {
+export function StatMatrixTable({ players }: { players: Omit<Player, 'id'>[] }) {
   const [sortKey, setSortKey] = useState<SortKey>('big_board_rank')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
   const [posFilter, setPosFilter] = useState('ALL')
@@ -50,15 +51,17 @@ export function StatMatrixTable({ players }: { players: Player[] }) {
     }
 
     result.sort((a, b) => {
-      let aVal: any
-      let bVal: any
+      let aVal: string | number | null | undefined
+      let bVal: string | number | null | undefined
 
       if (sortKey === 'name') {
         aVal = `${a.last_name} ${a.first_name}`
         bVal = `${b.last_name} ${b.first_name}`
       } else {
-        aVal = a[sortKey as keyof Player]
-        bVal = b[sortKey as keyof Player]
+        const rawA = a[sortKey as keyof SeedPlayer]
+        const rawB = b[sortKey as keyof SeedPlayer]
+        aVal = typeof rawA === 'string' || typeof rawA === 'number' ? rawA : null
+        bVal = typeof rawB === 'string' || typeof rawB === 'number' ? rawB : null
       }
 
       if (aVal == null) return 1

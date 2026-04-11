@@ -3,7 +3,6 @@
 import { useState } from 'react'
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'OT', 'IOL', 'EDGE', 'DL', 'LB', 'CB', 'S']
-const TIERS = ['ALL', 'ELITE', 'FRANCHISE', 'ALL_STAR', 'STARTER', 'ROTATION']
 
 export function BigBoardFilters() {
   const [activePosition, setActivePosition] = useState('ALL')

@@ -78,14 +78,20 @@ test.describe('Functional Tests — Core User Flows', () => {
 
   test('navigation works across all pages', async ({ page }) => {
     await page.goto('/')
-    // Click STATS nav link
-    await page.click('text=[STATS]')
-    await expect(page).toHaveURL('/stats')
-    // Click COMPARE nav link
-    await page.click('text=[COMPARE]')
-    await expect(page).toHaveURL('/compare')
-    // Click BOARD to go home
-    await page.click('text=[BOARD]')
-    await expect(page).toHaveURL('/')
+    // Use exact-text matching to avoid colliding with [BOARD RANK] etc.
+    // waitForURL is more reliable than toHaveURL under parallel load —
+    // it waits on the navigation event rather than polling the URL string.
+    await Promise.all([
+      page.waitForURL('**/stats', { timeout: 15_000 }),
+      page.getByRole('link', { name: '[STATS]', exact: true }).click(),
+    ])
+    await Promise.all([
+      page.waitForURL('**/compare', { timeout: 15_000 }),
+      page.getByRole('link', { name: '[COMPARE]', exact: true }).click(),
+    ])
+    await Promise.all([
+      page.waitForURL((url) => url.pathname === '/', { timeout: 15_000 }),
+      page.getByRole('link', { name: '[BOARD]', exact: true }).click(),
+    ])
   })
 })

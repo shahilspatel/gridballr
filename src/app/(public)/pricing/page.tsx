@@ -6,10 +6,11 @@ import { useState } from 'react'
 
 export default function PricingPage() {
   const [loading, setLoading] = useState(false)
-  const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
+  const [error, setError] = useState<string | null>(null)
 
   const handleUpgrade = async (cycle: 'monthly' | 'annual') => {
     setLoading(true)
+    setError(null)
     try {
       const priceId =
         cycle === 'monthly' ? PLANS.pro.stripePriceIdMonthly : PLANS.pro.stripePriceIdAnnual
@@ -20,10 +21,31 @@ export default function PricingPage() {
         body: JSON.stringify({ priceId }),
       })
 
+      // Handle non-2xx by status code, not by string match. The previous
+      // version silently swallowed 401 (unauthenticated) and 429 (rate
+      // limited) — the button would flicker and the user got no feedback.
+      if (response.status === 401) {
+        setError('Sign in to upgrade to Pro.')
+        return
+      }
+      if (response.status === 429) {
+        setError('Too many checkout attempts — try again in a minute.')
+        return
+      }
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}))
+        setError(data?.error ?? 'Checkout failed. Please try again.')
+        return
+      }
+
       const { sessionUrl } = await response.json()
-      if (sessionUrl) window.location.href = sessionUrl
-    } catch (error) {
-      alert('Failed to start checkout. Please try again.')
+      if (sessionUrl) {
+        window.location.href = sessionUrl
+      } else {
+        setError('Checkout did not return a session — please contact support.')
+      }
+    } catch {
+      setError('Failed to start checkout. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -43,6 +65,12 @@ export default function PricingPage() {
             tools.
           </p>
         </div>
+
+        {error && (
+          <div className="mb-6 border border-red/30 bg-red/5 px-4 py-3 text-center text-xs text-red">
+            {error}
+          </div>
+        )}
 
         <div className="grid gap-6 sm:grid-cols-2">
           {/* Free */}

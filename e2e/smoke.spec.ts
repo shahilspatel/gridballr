@@ -97,4 +97,32 @@ test.describe('Smoke Tests — All Pages Load', () => {
     await page.goto('/signup')
     await expect(page.getByRole('button', { name: 'CREATE_ACCOUNT' })).toBeVisible()
   })
+
+  test('forgot-password page loads', async ({ page }) => {
+    await page.goto('/forgot-password')
+    await expect(page.locator('text=FORGOT_PASSWORD')).toBeVisible()
+    await expect(page.getByRole('button', { name: 'SEND_RESET_LINK' })).toBeVisible()
+  })
+
+  test('contact page loads', async ({ page }) => {
+    await page.goto('/contact')
+    await expect(page.locator('text=gridballr@gmail.com')).toBeVisible()
+  })
+
+  test('early-access page loads', async ({ page }) => {
+    await page.goto('/early-access')
+    await expect(page.getByRole('button', { name: 'JOIN_WAITLIST' })).toBeVisible()
+  })
+
+  test('Stripe success redirect lands on homepage with upgraded banner', async ({ page }) => {
+    // BUG-004 fix: success_url used to point to /dashboard (404). Now it
+    // goes to /?upgraded=true. Verify that URL renders a 200 with the banner.
+    await page.goto('/?upgraded=true')
+    await expect(page.locator('text=UPGRADE_SUCCESSFUL')).toBeVisible()
+  })
+
+  test('welcome banner shows on /?welcome=true', async ({ page }) => {
+    await page.goto('/?welcome=true')
+    await expect(page.locator('text=WELCOME_ABOARD')).toBeVisible()
+  })
 })

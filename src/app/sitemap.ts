@@ -18,8 +18,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/dynasty',
     '/dynasty/calculator',
     '/pricing',
+    '/early-access',
+    '/contact',
     '/login',
     '/signup',
+    '/forgot-password',
     '/terms',
     '/privacy',
   ].map((path) => ({

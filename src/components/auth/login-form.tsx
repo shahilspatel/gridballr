@@ -3,18 +3,21 @@
 import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { safeRedirect } from '@/lib/safe-redirect'
 
 export function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const redirect = searchParams.get('redirect') ?? '/'
+  const redirect = safeRedirect(searchParams.get('redirect'))
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [honeypot, setHoneypot] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (honeypot) return
     setError(null)
     setLoading(true)
 
@@ -58,6 +61,16 @@ export function LoginForm() {
       )}
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div className="absolute -left-[9999px]" aria-hidden="true">
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+          />
+        </div>
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold tracking-widest text-muted">EMAIL</label>
           <input
@@ -89,21 +102,27 @@ export function LoginForm() {
         >
           {loading ? 'AUTHENTICATING...' : 'AUTHENTICATE'}
         </button>
+
+        <a href="/forgot-password" className="text-right text-[10px] text-muted hover:text-cyan">
+          FORGOT_PASSWORD?
+        </a>
       </form>
 
-      <div className="mt-4 flex flex-col gap-2">
-        <div className="flex items-center gap-2">
-          <div className="h-px flex-1 bg-border" />
-          <span className="text-[9px] text-muted">OR</span>
-          <div className="h-px flex-1 bg-border" />
+      {process.env.NEXT_PUBLIC_GOOGLE_OAUTH_ENABLED === 'true' && (
+        <div className="mt-4 flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-[9px] text-muted">OR</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <button
+            onClick={handleGoogleLogin}
+            className="border border-border px-4 py-2 text-[11px] font-medium text-muted transition-colors hover:border-foreground hover:text-foreground"
+          >
+            CONTINUE WITH GOOGLE
+          </button>
         </div>
-        <button
-          onClick={handleGoogleLogin}
-          className="border border-border px-4 py-2 text-[11px] font-medium text-muted transition-colors hover:border-foreground hover:text-foreground"
-        >
-          CONTINUE WITH GOOGLE
-        </button>
-      </div>
+      )}
 
       <div className="mt-4 text-center text-[10px] text-muted">
         NO ACCOUNT?{' '}

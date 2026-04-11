@@ -2,11 +2,11 @@
 
 import { useState, useMemo } from 'react'
 import { PlayerCard } from '@/components/player/player-card'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 
 const POSITIONS = ['ALL', 'QB', 'RB', 'WR', 'TE', 'OT', 'IOL', 'EDGE', 'DL', 'LB', 'CB', 'S']
 
-export function BigBoard({ players }: { players: Player[] }) {
+export function BigBoard({ players }: { players: SeedPlayer[] }) {
   const [position, setPosition] = useState('ALL')
   const [search, setSearch] = useState('')
 
@@ -80,7 +80,7 @@ export function BigBoard({ players }: { players: Player[] }) {
           {position !== 'ALL' && (
             <span>
               {' '}
-              // FILTER: <span className="text-cyan">{position}</span>
+              {'//'} FILTER: <span className="text-cyan">{position}</span>
             </span>
           )}
         </div>

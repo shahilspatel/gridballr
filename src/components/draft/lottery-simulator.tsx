@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { NFL_TEAMS } from '@/types'
 
 const DRAFT_ORDER_2025 = [
   { pick: 1, team: 'NYG', record: '3-14' },

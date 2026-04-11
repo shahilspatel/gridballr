@@ -4,19 +4,12 @@ test.describe('Auth & Checkout Flow', () => {
   test('signup page displays form', async ({ page }) => {
     await page.goto('/signup')
 
-    // Verify signup page loads
+    // Verify signup page loads with all required form elements.
+    // No conditional assertions — if any of these aren't visible, the test
+    // should fail, not silently pass (false-green pattern from round 5 audit).
     await expect(page.getByRole('button', { name: 'CREATE_ACCOUNT' })).toBeVisible()
-
-    // Check for email and password inputs
-    const emailInput = page.locator('input[type="email"]').first()
-    const passwordInput = page.locator('input[type="password"]').first()
-
-    if (await emailInput.isVisible()) {
-      await expect(emailInput).toBeVisible()
-    }
-    if (await passwordInput.isVisible()) {
-      await expect(passwordInput).toBeVisible()
-    }
+    await expect(page.locator('input[type="email"]').first()).toBeVisible()
+    await expect(page.locator('input[type="password"]').first()).toBeVisible()
   })
 
   test('login page displays form', async ({ page }) => {
@@ -74,16 +67,23 @@ test.describe('Auth & Checkout Flow', () => {
 
   test('navigate signup → login → pricing flow', async ({ page }) => {
     // Start at signup
-    await page.goto('/signup')
-    await expect(page.getByRole('button', { name: 'CREATE_ACCOUNT' })).toBeVisible()
+    await page.goto('/signup', { waitUntil: 'domcontentloaded' })
+    await expect(page.getByRole('button', { name: 'CREATE_ACCOUNT' })).toBeVisible({
+      timeout: 15_000,
+    })
 
     // Navigate to login
-    await page.goto('/login')
-    await expect(page.locator('text=AUTH_GATEWAY')).toBeVisible()
+    await page.goto('/login', { waitUntil: 'domcontentloaded' })
+    await expect(page.locator('text=AUTH_GATEWAY')).toBeVisible({ timeout: 15_000 })
 
-    // Navigate to pricing
-    await page.goto('/pricing')
-    await expect(page.locator('text=UPGRADE TO')).toBeVisible()
-    await expect(page.getByRole('button', { name: '$12/MONTH' })).toBeVisible()
+    // Navigate to pricing — use heading role for a deterministic wait under
+    // parallel load. text= locators don't auto-wait on initial render.
+    await page.goto('/pricing', { waitUntil: 'domcontentloaded' })
+    await expect(page.getByRole('heading', { name: /UPGRADE TO/i })).toBeVisible({
+      timeout: 15_000,
+    })
+    await expect(page.getByRole('button', { name: '$12/MONTH' })).toBeVisible({
+      timeout: 15_000,
+    })
   })
 })

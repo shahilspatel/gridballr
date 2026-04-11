@@ -121,7 +121,7 @@ export default function TermsPage() {
             </section>
 
             <div className="mt-4 border-t border-border pt-4 text-[10px] text-muted">
-              LAST_UPDATED: 2025-04-08 // EFFECTIVE_DATE: 2025-04-08
+              LAST_UPDATED: 2026-04-08 // EFFECTIVE_DATE: 2026-04-08
             </div>
           </div>
         </div>

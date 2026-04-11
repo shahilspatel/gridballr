@@ -1,22 +1,22 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { NFL_TEAM_DATA, positionMatchesNeed } from '@/lib/data/nfl-teams'
 import { getPositionColor } from '@/lib/utils/format'
 
-const DRAFT_CLASSES: Record<number, Player[]> = {
-  2026: SEED_PLAYERS_2026 as Player[],
-  2025: SEED_PLAYERS as Player[],
+const DRAFT_CLASSES: Record<number, SeedPlayer[]> = {
+  2026: SEED_PLAYERS_2026,
+  2025: SEED_PLAYERS,
 }
 
 interface DraftPick {
   pickNumber: number
   team: string
   teamName: string
-  player: Player | null
+  player: SeedPlayer | null
   isUser: boolean
 }
 
@@ -28,7 +28,34 @@ export function MockDraftEngine() {
   const [userTeam, setUserTeam] = useState('NYG')
   const [picks, setPicks] = useState<DraftPick[]>([])
   const [currentPick, setCurrentPick] = useState(0)
-  const [availablePlayers, setAvailablePlayers] = useState<Player[]>([])
+  const [availablePlayers, setAvailablePlayers] = useState<SeedPlayer[]>([])
+
+  const autoPickUntilUser = useCallback(
+    (currentPicks: DraftPick[], available: SeedPlayer[], startIdx: number) => {
+      const newPicks = [...currentPicks]
+      let remaining = [...available]
+      let idx = startIdx
+
+      while (idx < newPicks.length && !newPicks[idx].isUser) {
+        const team = NFL_TEAM_DATA.find((t) => t.abbr === newPicks[idx].team)!
+        const pick = aiSelectPlayer(remaining, team.needs)
+        if (pick) {
+          newPicks[idx] = { ...newPicks[idx], player: pick }
+          remaining = remaining.filter((p) => p.slug !== pick.slug)
+        }
+        idx++
+      }
+
+      setPicks(newPicks)
+      setAvailablePlayers(remaining)
+      setCurrentPick(idx)
+
+      if (idx >= newPicks.length) {
+        setPhase('complete')
+      }
+    },
+    [],
+  )
 
   const initDraft = useCallback(() => {
     const allPlayers = (DRAFT_CLASSES[draftYear] ?? []).sort(
@@ -48,33 +75,9 @@ export function MockDraftEngine() {
     setPhase('drafting')
 
     autoPickUntilUser(draftPicks, allPlayers, 0)
-  }, [userTeam, draftYear])
+  }, [userTeam, draftYear, autoPickUntilUser])
 
-  function autoPickUntilUser(currentPicks: DraftPick[], available: Player[], startIdx: number) {
-    const newPicks = [...currentPicks]
-    let remaining = [...available]
-    let idx = startIdx
-
-    while (idx < newPicks.length && !newPicks[idx].isUser) {
-      const team = NFL_TEAM_DATA.find((t) => t.abbr === newPicks[idx].team)!
-      const pick = aiSelectPlayer(remaining, team.needs)
-      if (pick) {
-        newPicks[idx] = { ...newPicks[idx], player: pick }
-        remaining = remaining.filter((p) => p.slug !== pick.slug)
-      }
-      idx++
-    }
-
-    setPicks(newPicks)
-    setAvailablePlayers(remaining)
-    setCurrentPick(idx)
-
-    if (idx >= newPicks.length) {
-      setPhase('complete')
-    }
-  }
-
-  function aiSelectPlayer(available: Player[], needs: string[]): Player | null {
+  function aiSelectPlayer(available: SeedPlayer[], needs: string[]): SeedPlayer | null {
     if (available.length === 0) return null
 
     for (const need of needs) {
@@ -84,7 +87,7 @@ export function MockDraftEngine() {
     return available[0]
   }
 
-  function userPick(player: Player) {
+  function userPick(player: SeedPlayer) {
     const newPicks = [...picks]
     newPicks[currentPick] = { ...newPicks[currentPick], player }
     const remaining = availablePlayers.filter((p) => p.slug !== player.slug)
@@ -158,8 +161,8 @@ export function MockDraftEngine() {
               </select>
             </div>
             <div className="text-[10px] text-muted">
-              <span className="text-cyan">MODE:</span> SOLO // 1 ROUND // 32 PICKS // BPA + NEED AI
-              // <span className="text-cyan">{draftYear}</span> CLASS (
+              <span className="text-cyan">MODE:</span> SOLO {'//'} 1 ROUND {'//'} 32 PICKS {'//'}{' '}
+              BPA + NEED AI {'//'} <span className="text-cyan">{draftYear}</span> CLASS (
               {(DRAFT_CLASSES[draftYear] ?? []).length} PROSPECTS)
             </div>
             <button
@@ -181,7 +184,9 @@ export function MockDraftEngine() {
           <div className="flex items-center gap-2 text-[10px]">
             <div className="h-1.5 w-1.5 rounded-full bg-green" />
             <span className="text-green">DRAFT_COMPLETE</span>
-            <span className="text-muted">// {draftYear} CLASS</span>
+            <span className="text-muted">
+              {'//'} {draftYear} CLASS
+            </span>
           </div>
           <button
             onClick={resetDraft}

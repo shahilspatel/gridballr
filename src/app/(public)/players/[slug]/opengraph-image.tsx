@@ -95,7 +95,9 @@ export default async function Image({ params }: { params: Promise<{ slug: string
         <span style={{ color: '#00f0ff', fontSize: 18, letterSpacing: '0.15em', display: 'flex' }}>
           GRIDBALLR
         </span>
-        <span style={{ color: '#52525b', fontSize: 18, display: 'flex' }}>// PLAYER_PROFILE</span>
+        <span style={{ color: '#52525b', fontSize: 18, display: 'flex' }}>
+          {'//'} PLAYER_PROFILE
+        </span>
       </div>
 
       {/* Rank */}

@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useMemo, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useToast } from '@/components/ui/toast'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 import { DRAFT_YEARS } from '@/lib/draft-config'
-import { formatHeight, formatWeight, getPositionColor, getTierColor } from '@/lib/utils/format'
+import { formatHeight, getPositionColor } from '@/lib/utils/format'
 
-const ALL_PROSPECTS = DRAFT_YEARS.flatMap((d) => d.players as Player[])
+const ALL_PROSPECTS = DRAFT_YEARS.flatMap((d) => d.players)
 
 type CompStat = {
   label: string
-  key: keyof Player
+  key: keyof SeedPlayer
   format?: 'height' | 'weight' | 'time' | 'number' | 'inches'
   higherBetter?: boolean
   lowerBetter?: boolean
@@ -50,8 +50,8 @@ export function CompareView() {
     router.replace(qs ? `/compare?${qs}` : '/compare', { scroll: false })
   }, [slugA, slugB, router])
 
-  const playerA = ALL_PROSPECTS.find((p) => p.slug === slugA) as Player | undefined
-  const playerB = ALL_PROSPECTS.find((p) => p.slug === slugB) as Player | undefined
+  const playerA = ALL_PROSPECTS.find((p) => p.slug === slugA)
+  const playerB = ALL_PROSPECTS.find((p) => p.slug === slugB)
 
   const shareUrl =
     typeof window !== 'undefined' ? `${window.location.origin}/compare?a=${slugA}&b=${slugB}` : ''
@@ -76,24 +76,26 @@ export function CompareView() {
         </button>
       </div>
 
-      {(!slugA || !slugB) && (
+      {(!slugA || !slugB || slugA === slugB) && (
         <div className="border border-border bg-surface p-8 text-center">
           <span className="text-[10px] text-muted">
-            {!slugA && !slugB
-              ? 'SELECT TWO PROSPECTS TO COMPARE'
-              : !slugB
-                ? 'SELECT A SECOND PROSPECT TO COMPARE'
-                : 'SELECT A FIRST PROSPECT TO COMPARE'}
+            {slugA && slugA === slugB
+              ? 'SELECT TWO DIFFERENT PROSPECTS TO COMPARE'
+              : !slugA && !slugB
+                ? 'SELECT TWO PROSPECTS TO COMPARE'
+                : !slugB
+                  ? 'SELECT A SECOND PROSPECT TO COMPARE'
+                  : 'SELECT A FIRST PROSPECT TO COMPARE'}
           </span>
         </div>
       )}
 
-      {playerA && playerB && (
+      {playerA && playerB && slugA !== slugB && (
         <>
           {/* Player headers */}
           <div className="grid grid-cols-2 gap-4">
-            <PlayerHeader player={playerA as Player} />
-            <PlayerHeader player={playerB as Player} />
+            <PlayerHeader player={playerA} />
+            <PlayerHeader player={playerB} />
           </div>
 
           {/* Stat comparison */}
@@ -117,8 +119,8 @@ export function CompareView() {
 
           {/* Scouting comparison */}
           <div className="grid grid-cols-2 gap-4">
-            <ScoutingPanel player={playerA as Player} />
-            <ScoutingPanel player={playerB as Player} />
+            <ScoutingPanel player={playerA} />
+            <ScoutingPanel player={playerB} />
           </div>
         </>
       )}
@@ -162,7 +164,7 @@ function PlayerSelector({
   )
 }
 
-function PlayerHeader({ player }: { player: Player }) {
+function PlayerHeader({ player }: { player: SeedPlayer }) {
   const posColor = getPositionColor(player.position)
   return (
     <div className="border border-border bg-surface p-4">
@@ -256,7 +258,7 @@ function CompareRow({
   )
 }
 
-function ScoutingPanel({ player }: { player: Player }) {
+function ScoutingPanel({ player }: { player: SeedPlayer }) {
   return (
     <div className="border border-border bg-surface p-4">
       <h3 className="mb-2 text-[10px] font-bold tracking-widest text-cyan">SCOUTING_REPORT</h3>

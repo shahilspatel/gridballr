@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { BigBoard } from '@/components/draft/big-board'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 
 interface DraftYearToggleProps {
   years: number[]
   defaultYear: number
-  allPlayers: Record<number, Player[]>
+  allPlayers: Record<number, SeedPlayer[]>
   labels: Record<number, string>
 }
 

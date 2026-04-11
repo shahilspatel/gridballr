@@ -58,6 +58,9 @@ test.describe('New Feature Tests', () => {
 
   test('footer has legal links', async ({ page }) => {
     await page.goto('/')
+    // Footer is below the fold; scroll it into view before asserting.
+    // toBeVisible requires visibility in the viewport.
+    await page.locator('footer').scrollIntoViewIfNeeded()
     await expect(page.locator('footer')).toBeVisible()
     await expect(page.locator('footer a:has-text("Terms of Service")')).toBeVisible()
     await expect(page.locator('footer a:has-text("Privacy Policy")')).toBeVisible()

@@ -14,10 +14,15 @@ export function Footer() {
             <p className="text-[10px] text-muted">
               NFL Draft Intelligence Platform. Advanced scouting, analytics, and prospect tools.
             </p>
-            <div className="mt-1 flex items-center gap-1.5 text-[9px] text-muted">
+            <a
+              href="https://gridballr.betteruptime.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 flex items-center gap-1.5 text-[9px] text-muted hover:text-green"
+            >
               <div className="h-1.5 w-1.5 rounded-full bg-green" />
-              <span>ALL_SYSTEMS_OPERATIONAL</span>
-            </div>
+              <span>STATUS_PAGE</span>
+            </a>
           </div>
 
           {/* Scouting */}
@@ -50,8 +55,10 @@ export function Footer() {
             <span className="text-[10px] font-bold tracking-widest text-muted">ACCOUNT</span>
             <div className="flex flex-col gap-1.5">
               <FooterLink href="/pricing" label="Pricing" />
+              <FooterLink href="/early-access" label="Early Access" />
               <FooterLink href="/login" label="Login" />
               <FooterLink href="/signup" label="Sign Up" />
+              <FooterLink href="/contact" label="Contact" />
             </div>
             <span className="mt-2 text-[10px] font-bold tracking-widest text-muted">LEGAL</span>
             <div className="flex flex-col gap-1.5">

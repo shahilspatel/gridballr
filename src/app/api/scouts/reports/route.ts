@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 import { createReportSchema } from '@/lib/validators/scouts'
 import { containsProfanity } from '@/lib/moderation'
 
 export async function POST(req: Request) {
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = rateLimit(`scouts:report:${ip}`, { limit: 3, windowMs: 3_600_000 })
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`scouts:report:${ip}`, { limit: 3, windowMs: 3_600_000 })
   if (!success) {
     return NextResponse.json({ error: 'Rate limit: max 3 reports per hour' }, { status: 429 })
   }
@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: `Account suspended${until}` }, { status: 403 })
   }
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = createReportSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
@@ -39,15 +39,42 @@ export async function POST(req: Request) {
 
   const { summary, strengths, weaknesses } = parsed.data
   const allText = [summary, ...strengths, ...weaknesses].join(' ')
-  if (containsProfanity(allText)) {
-    return NextResponse.json({ error: 'Content contains inappropriate language' }, { status: 400 })
+  // Wrap profanity check so an ESM-load failure on `bad-words` cannot 500
+  // every submission. Worst case: the check is bypassed and content goes to
+  // the moderation queue via the flag system instead.
+  try {
+    if (containsProfanity(allText)) {
+      return NextResponse.json(
+        { error: 'Content contains inappropriate language' },
+        { status: 400 },
+      )
+    }
+  } catch (e) {
+    console.error('Profanity check failed (open-fail):', e)
+  }
+
+  // Resolve player_slug → players.id UUID. The form sends a slug because the
+  // client data lives in seed files without UUIDs; we look up the canonical
+  // id at submit time. If the slug doesn't match, return 404 not 500.
+  const { data: playerRow, error: playerErr } = await supabase
+    .from('players')
+    .select('id')
+    .eq('slug', parsed.data.player_slug)
+    .maybeSingle()
+
+  if (playerErr) {
+    console.error('Player lookup error:', playerErr)
+    return NextResponse.json({ error: 'Player lookup failed' }, { status: 500 })
+  }
+  if (!playerRow) {
+    return NextResponse.json({ error: 'Player not found' }, { status: 404 })
   }
 
   const { data, error } = await supabase
     .from('scout_reports')
     .insert({
       user_id: user.id,
-      player_id: parsed.data.player_id,
+      player_id: playerRow.id,
       tier: parsed.data.tier,
       summary: parsed.data.summary,
       strengths: parsed.data.strengths,
@@ -62,16 +89,31 @@ export async function POST(req: Request) {
     .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Scout report insert error:', error)
+    return NextResponse.json({ error: 'Failed to create report' }, { status: 500 })
   }
 
   return NextResponse.json(data, { status: 201 })
 }
 
+const VALID_SORTS = ['recent', 'popular', 'discussed'] as const
+
 export async function GET(req: Request) {
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`scouts:reports:get:${ip}`, {
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
+
   const { searchParams } = new URL(req.url)
-  const sort = searchParams.get('sort') ?? 'recent'
-  const page = parseInt(searchParams.get('page') ?? '1')
+  const sortParam = searchParams.get('sort') ?? 'recent'
+  const sort = VALID_SORTS.includes(sortParam as (typeof VALID_SORTS)[number])
+    ? sortParam
+    : 'recent'
+  const page = Math.max(1, Math.min(parseInt(searchParams.get('page') ?? '1') || 1, 1000))
   const limit = 20
   const offset = (page - 1) * limit
 
@@ -98,7 +140,8 @@ export async function GET(req: Request) {
   const { data, error } = await query
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Scout reports fetch error:', error)
+    return NextResponse.json({ error: 'Failed to fetch reports' }, { status: 500 })
   }
 
   return NextResponse.json(data)

@@ -1,7 +1,36 @@
 import { z } from 'zod'
 
+export const reportIdSchema = z.string().uuid()
+
+export const BADGE_VALUES = [
+  'SPEED_DEMON',
+  'LOCKDOWN',
+  'ROUTE_TECHNICIAN',
+  'ARM_CANNON',
+  'RUN_STUFFER',
+  'BALL_HAWK',
+  'PANCAKE_MACHINE',
+  'PLAY_MAKER',
+  'DUAL_THREAT',
+  'RED_ZONE_THREAT',
+  'PASS_RUSH_SPECIALIST',
+  'COVERAGE_KING',
+  'SURE_TACKLER',
+  'YAC_MONSTER',
+  'FIELD_GENERAL',
+] as const
+
+// player_slug is the canonical client→server identifier. The route resolves
+// it to the players.id UUID at submit time. Slugs follow the kebab-case
+// convention: lowercase letters, digits, hyphens.
+export const playerSlugSchema = z
+  .string()
+  .min(2)
+  .max(80)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Invalid player slug')
+
 export const createReportSchema = z.object({
-  player_id: z.string().uuid(),
+  player_slug: playerSlugSchema,
   tier: z.enum(['ELITE', 'FRANCHISE', 'ALL_STAR', 'STARTER', 'ROTATION', 'DEPTH']),
   summary: z
     .string()
@@ -15,7 +44,7 @@ export const createReportSchema = z.object({
     .array(z.string().min(1).max(100))
     .min(1, 'At least 1 weakness required')
     .max(5, 'Maximum 5 weaknesses'),
-  badges: z.array(z.string()).max(3).default([]),
+  badges: z.array(z.enum(BADGE_VALUES)).max(3).default([]),
   grade: z.number().min(0).max(10),
 })
 

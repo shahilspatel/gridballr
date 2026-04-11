@@ -1,13 +1,18 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { rateLimit } from '@/lib/rate-limit'
-import { voteSchema } from '@/lib/validators/scouts'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
+import { reportIdSchema, voteSchema } from '@/lib/validators/scouts'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const idParse = reportIdSchema.safeParse(rawId)
+  if (!idParse.success) {
+    return NextResponse.json({ error: 'Invalid report id' }, { status: 400 })
+  }
+  const id = idParse.data
 
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = rateLimit(`scouts:vote:${ip}`, { limit: 30, windowMs: 60_000 })
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`scouts:vote:${ip}`, { limit: 30, windowMs: 60_000 })
   if (!success) {
     return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
   }
@@ -20,7 +25,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = voteSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
@@ -47,7 +52,8 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   })
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Vote insert error:', error)
+    return NextResponse.json({ error: 'Failed to record vote' }, { status: 500 })
   }
 
   return NextResponse.json({ action: 'added' }, { status: 201 })

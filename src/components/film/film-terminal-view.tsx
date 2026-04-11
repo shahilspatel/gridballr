@@ -131,7 +131,7 @@ export function FilmTerminalView() {
                   <div className="flex flex-col">
                     <span className="text-[11px] text-foreground">{clip.title}</span>
                     <span className="text-[9px] text-muted">
-                      {clip.sourceChannel} // {clip.clipType.toUpperCase()}
+                      {clip.sourceChannel} {'//'} {clip.clipType.toUpperCase()}
                     </span>
                   </div>
                 </button>

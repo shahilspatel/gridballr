@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { AuthButton } from './auth-button'
 
 const NAV_LINKS = [
   { href: '/', label: 'BOARD', shortLabel: 'BOARD' },
@@ -64,12 +65,7 @@ export function Navbar() {
               <div className="h-1.5 w-1.5 rounded-full bg-green" />
               <span>SYS_ONLINE</span>
             </div>
-            <Link
-              href="/login"
-              className="border border-border px-3 py-1 text-[11px] text-muted transition-colors hover:border-cyan hover:text-cyan"
-            >
-              LOGIN
-            </Link>
+            <AuthButton />
           </div>
         </div>
       </nav>

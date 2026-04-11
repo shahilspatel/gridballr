@@ -1,12 +1,12 @@
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 
 export type DraftYearStatus = 'COMPLETED' | 'UPCOMING'
 
 export interface DraftYearConfig {
   year: number
-  players: Player[]
+  players: SeedPlayer[]
   label: DraftYearStatus
 }
 
@@ -15,12 +15,12 @@ export interface DraftYearConfig {
 export const DRAFT_YEARS: DraftYearConfig[] = [
   {
     year: 2026,
-    players: SEED_PLAYERS_2026 as Player[],
+    players: SEED_PLAYERS_2026,
     label: 'UPCOMING',
   },
   {
     year: 2025,
-    players: SEED_PLAYERS as Player[],
+    players: SEED_PLAYERS,
     label: 'COMPLETED',
   },
 ]
@@ -28,7 +28,7 @@ export const DRAFT_YEARS: DraftYearConfig[] = [
 export const CURRENT_DRAFT_YEAR = DRAFT_YEARS.find((d) => d.label === 'UPCOMING')!.year
 export const DEFAULT_DRAFT_YEAR = CURRENT_DRAFT_YEAR
 
-export function getPlayersForYear(year: number): Player[] {
+export function getPlayersForYear(year: number): SeedPlayer[] {
   return (DRAFT_YEARS.find((d) => d.year === year)?.players ?? []).sort(
     (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
   )

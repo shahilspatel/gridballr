@@ -5,9 +5,9 @@ import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { getPositionColor } from '@/lib/utils/format'
 import { useToast } from '@/components/ui/toast'
 import { createClient } from '@/lib/supabase/client'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 
-const INITIAL_PLAYERS = (SEED_PLAYERS_2026 as Player[]).sort(
+const INITIAL_PLAYERS = SEED_PLAYERS_2026.slice().sort(
   (a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999),
 )
 
@@ -16,16 +16,16 @@ type RankingEntry = { slug: string; notes: string | null }
 
 const LS_KEY = 'gridballr_my_board'
 
-function boardToRankings(board: Player[], notes: Record<string, string>): RankingEntry[] {
+function boardToRankings(board: SeedPlayer[], notes: Record<string, string>): RankingEntry[] {
   return board.map((p) => ({ slug: p.slug, notes: notes[p.slug] || null }))
 }
 
 function rankingsToBoard(
   rankings: RankingEntry[],
-  allPlayers: Player[],
-): { board: Player[]; notes: Record<string, string> } {
+  allPlayers: SeedPlayer[],
+): { board: SeedPlayer[]; notes: Record<string, string> } {
   const playerMap = new Map(allPlayers.map((p) => [p.slug, p]))
-  const board: Player[] = []
+  const board: SeedPlayer[] = []
   const notes: Record<string, string> = {}
 
   for (const entry of rankings) {
@@ -49,7 +49,7 @@ function rankingsToBoard(
 
 export function MyBoardBuilder() {
   const { toast } = useToast()
-  const [board, setBoard] = useState<Player[]>(INITIAL_PLAYERS)
+  const [board, setBoard] = useState<SeedPlayer[]>(INITIAL_PLAYERS)
   const [dragIdx, setDragIdx] = useState<number | null>(null)
   const [notes, setNotes] = useState<Record<string, string>>({})
   const [editingNote, setEditingNote] = useState<string | null>(null)
@@ -97,7 +97,10 @@ export function MyBoardBuilder() {
         try {
           const stored = localStorage.getItem(LS_KEY)
           if (stored) {
-            const rankings = JSON.parse(stored) as RankingEntry[]
+            const parsed = JSON.parse(stored)
+            // Guard against corrupted or stale-shape localStorage data.
+            if (!Array.isArray(parsed)) throw new Error('stored rankings is not an array')
+            const rankings = parsed as RankingEntry[]
             const { board: restored, notes: restoredNotes } = rankingsToBoard(
               rankings,
               INITIAL_PLAYERS,

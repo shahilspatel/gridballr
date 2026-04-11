@@ -1,13 +1,13 @@
 'use client'
 
-import { useRef, useMemo, useState, useCallback, Suspense } from 'react'
+import { useRef, useMemo, useState, useCallback, useLayoutEffect, Suspense } from 'react'
 import { Canvas, useFrame, useThree, ThreeEvent } from '@react-three/fiber'
 import { OrbitControls, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { useRouter } from 'next/navigation'
 import { getPlayersForYear, getAllYears } from '@/lib/draft-config'
 import { getPositionColor } from '@/lib/utils/format'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 
 // ---------------------------------------------------------------------------
 // Position filter config
@@ -44,7 +44,7 @@ interface Measurables {
   broad_jump: number
 }
 
-function computePositionDefaults(players: Player[]): Record<string, Measurables> {
+function computePositionDefaults(players: SeedPlayer[]): Record<string, Measurables> {
   const accum: Record<string, { sums: Measurables; counts: Measurables }> = {}
 
   for (const p of players) {
@@ -108,13 +108,13 @@ function normalize(value: number, min: number, max: number): number {
 // Compute 3D positions for each prospect
 // ---------------------------------------------------------------------------
 interface ProspectPoint {
-  player: Player
+  player: SeedPlayer
   position: THREE.Vector3
   color: THREE.Color
   size: number
 }
 
-function buildPoints(players: Player[]): ProspectPoint[] {
+function buildPoints(players: SeedPlayer[]): ProspectPoint[] {
   const defaults = computePositionDefaults(players)
 
   const fallback: Measurables = {
@@ -214,13 +214,27 @@ function buildPoints(players: Player[]): ProspectPoint[] {
 // ---------------------------------------------------------------------------
 // Background star field
 // ---------------------------------------------------------------------------
+// Deterministic PRNG (mulberry32) so star positions are stable across renders
+// — satisfies React 19 purity rules (no Math.random during render).
+function mulberry32(seed: number): () => number {
+  let s = seed >>> 0
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0
+    let t = s
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 function Starfield({ count = 800 }: { count?: number }) {
   const positions = useMemo(() => {
+    const rand = mulberry32(0x5741f83d ^ count)
     const arr = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
-      arr[i * 3] = (Math.random() - 0.5) * 60
-      arr[i * 3 + 1] = (Math.random() - 0.5) * 60
-      arr[i * 3 + 2] = (Math.random() - 0.5) * 60
+      arr[i * 3] = (rand() - 0.5) * 60
+      arr[i * 3 + 1] = (rand() - 0.5) * 60
+      arr[i * 3 + 2] = (rand() - 0.5) * 60
     }
     return arr
   }, [count])
@@ -249,10 +263,13 @@ function ProspectCloud({ points, onHover, onClick }: ProspectCloudProps) {
   const tempObj = useMemo(() => new THREE.Object3D(), [])
   const tempColor = useMemo(() => new THREE.Color(), [])
 
-  // Update instance matrices and colors
-  useMemo(() => {
-    if (!meshRef.current) return
+  // Update instance matrices and colors whenever the point set changes.
+  // Using useLayoutEffect (not useMemo) because this is a side effect that
+  // mutates the instancedMesh ref — React 19 purity rules forbid ref access
+  // during render, so we do it after commit, before paint.
+  useLayoutEffect(() => {
     const mesh = meshRef.current
+    if (!mesh) return
 
     for (let i = 0; i < points.length; i++) {
       const pt = points[i]

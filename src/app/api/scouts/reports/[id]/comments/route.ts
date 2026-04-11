@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { rateLimit } from '@/lib/rate-limit'
-import { createCommentSchema } from '@/lib/validators/scouts'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
+import { createCommentSchema, reportIdSchema } from '@/lib/validators/scouts'
 import { containsProfanity } from '@/lib/moderation'
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const idParse = reportIdSchema.safeParse(rawId)
+  if (!idParse.success) {
+    return NextResponse.json({ error: 'Invalid report id' }, { status: 400 })
+  }
+  const id = idParse.data
 
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = rateLimit(`scouts:comment:${ip}`, { limit: 10, windowMs: 300_000 })
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`scouts:comment:${ip}`, { limit: 10, windowMs: 300_000 })
   if (!success) {
     return NextResponse.json(
       { error: 'Rate limit: max 10 comments per 5 minutes' },
@@ -35,7 +40,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     return NextResponse.json({ error: 'Account suspended' }, { status: 403 })
   }
 
-  const body = await req.json()
+  const body = await req.json().catch(() => null)
   const parsed = createCommentSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 })
@@ -56,14 +61,29 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     .single()
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Comment insert error:', error)
+    return NextResponse.json({ error: 'Failed to add comment' }, { status: 500 })
   }
 
   return NextResponse.json(data, { status: 201 })
 }
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id: rawId } = await params
+  const idParse = reportIdSchema.safeParse(rawId)
+  if (!idParse.success) {
+    return NextResponse.json({ error: 'Invalid report id' }, { status: 400 })
+  }
+  const id = idParse.data
+
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`scouts:comments:get:${ip}`, {
+    limit: 60,
+    windowMs: 60_000,
+  })
+  if (!success) {
+    return NextResponse.json({ error: 'Rate limit exceeded' }, { status: 429 })
+  }
 
   const supabase = await createClient()
 
@@ -75,7 +95,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     .order('created_at', { ascending: true })
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('Comments fetch error:', error)
+    return NextResponse.json({ error: 'Failed to fetch comments' }, { status: 500 })
   }
 
   return NextResponse.json(data)

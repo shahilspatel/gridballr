@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { DRAFT_YEARS } from '@/lib/draft-config'
 import { cleanText } from '@/lib/moderation'
-import type { Player, Badge, Tier } from '@/types'
+import type { Badge, Tier } from '@/types'
 
 const BADGE_OPTIONS: Badge[] = [
   'SPEED_DEMON',
@@ -26,7 +26,7 @@ const BADGE_OPTIONS: Badge[] = [
 interface ReportFormProps {
   onClose: () => void
   onSubmit: (report: {
-    player_id: string
+    player_slug: string
     tier: Tier
     summary: string
     strengths: string[]
@@ -112,7 +112,9 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
     setSubmitting(true)
     try {
       await onSubmit({
-        player_id: playerId,
+        // playerId state is the player slug (the option value in the select).
+        // The route resolves it to a UUID server-side.
+        player_slug: playerId,
         tier: tier as Tier,
         summary: cleanText(summary),
         strengths: filteredStrengths.map(cleanText),
@@ -153,7 +155,8 @@ export function ReportForm({ onClose, onSubmit }: ReportFormProps) {
           <option value="">Select prospect...</option>
           {DRAFT_YEARS.map((d) => (
             <optgroup key={d.year} label={`${d.year} Draft Class (${d.label})`}>
-              {(d.players as Player[])
+              {d.players
+                .slice()
                 .sort((a, b) => (a.big_board_rank ?? 999) - (b.big_board_rank ?? 999))
                 .map((p) => (
                   <option key={p.slug} value={p.slug}>

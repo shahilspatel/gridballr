@@ -1,12 +1,17 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { getStripe } from '@/lib/stripe/config'
 import { createClient } from '@/lib/supabase/server'
-import { rateLimit } from '@/lib/rate-limit'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
+
+const checkoutSchema = z.object({
+  priceId: z.string().min(1),
+})
 
 export async function POST(req: Request) {
   // Rate limit: 5 checkout attempts per minute per IP
-  const ip = req.headers.get('x-forwarded-for') ?? 'unknown'
-  const { success } = rateLimit(`checkout:${ip}`, { limit: 5, windowMs: 60_000 })
+  const ip = getClientIp(req)
+  const { success } = await rateLimit(`checkout:${ip}`, { limit: 5, windowMs: 60_000 })
   if (!success) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
@@ -20,15 +25,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
   }
 
-  const { priceId } = await req.json()
-
-  if (!priceId) {
-    return NextResponse.json({ error: 'Missing priceId' }, { status: 400 })
+  const body = await req.json().catch(() => null)
+  const parsed = checkoutSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
   }
+  const { priceId } = parsed.data
 
   // Validate priceId against allowed values
   const { PLANS } = await import('@/lib/stripe/plans')
-  const allowedPriceIds = [PLANS.pro.stripePriceIdMonthly, PLANS.pro.stripePriceIdAnnual]
+  const allowedPriceIds: string[] = [PLANS.pro.stripePriceIdMonthly, PLANS.pro.stripePriceIdAnnual]
   if (!allowedPriceIds.includes(priceId)) {
     return NextResponse.json({ error: 'Invalid priceId' }, { status: 400 })
   }
@@ -59,7 +65,10 @@ export async function POST(req: Request) {
     mode: 'subscription',
     payment_method_types: ['card'],
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?upgraded=true`,
+    // /dashboard does not exist (BUG-004 from round 5 audit). Land on the
+    // homepage with ?upgraded=true so the user sees the live product
+    // immediately and we can show a banner. When /account exists, switch.
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/?upgraded=true`,
     cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/pricing`,
     metadata: { user_id: user.id },
   })

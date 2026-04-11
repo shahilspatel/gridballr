@@ -21,8 +21,8 @@ export default function StatsPage() {
       <div className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6">
         <StatMatrixWithYears
           allPlayers={{
-            2026: SEED_PLAYERS_2026 as any,
-            2025: SEED_PLAYERS as any,
+            2026: SEED_PLAYERS_2026,
+            2025: SEED_PLAYERS,
           }}
         />
       </div>

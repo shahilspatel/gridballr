@@ -206,7 +206,6 @@ function StatsTab({
   const isQB = player.position === 'QB'
   const isRB = player.position === 'RB'
   const isWR = player.position === 'WR' || player.position === 'TE'
-  const isDef = ['EDGE', 'DL', 'LB', 'CB', 'S'].includes(player.position)
 
   return (
     <div className="flex flex-col gap-4">
@@ -343,7 +342,7 @@ function FilmTab({
               <div className="flex flex-col">
                 <span className="text-[11px] text-foreground">{clip.title}</span>
                 <span className="text-[9px] text-muted">
-                  {clip.sourceChannel} // {clip.clipType.toUpperCase()}
+                  {clip.sourceChannel} {'//'} {clip.clipType.toUpperCase()}
                 </span>
               </div>
             </div>

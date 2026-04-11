@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation'
 import { SEED_PLAYERS } from '@/lib/data/seed-prospects'
 import { SEED_PLAYERS_2026 } from '@/lib/data/seed-prospects-2026'
 import { getPositionColor } from '@/lib/utils/format'
-import type { Player } from '@/types'
-
-const ALL_PROSPECTS = [...(SEED_PLAYERS_2026 as Player[]), ...(SEED_PLAYERS as Player[])]
+const ALL_PROSPECTS = [...SEED_PLAYERS_2026, ...SEED_PLAYERS]
 
 export function GlobalSearch() {
   const router = useRouter()

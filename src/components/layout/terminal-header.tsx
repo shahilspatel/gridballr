@@ -17,7 +17,9 @@ export function TerminalHeader({
               <span className="text-xs font-bold tracking-widest text-cyan glow">{title}</span>
             </div>
             {subtitle && (
-              <span className="hidden text-[10px] text-muted sm:inline">// {subtitle}</span>
+              <span className="hidden text-[10px] text-muted sm:inline">
+                {'//'} {subtitle}
+              </span>
             )}
           </div>
           {status && (

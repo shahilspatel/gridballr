@@ -1,5 +1,6 @@
 import { TerminalHeader } from '@/components/layout/terminal-header'
 import { GalaxyView } from '@/components/galaxy/galaxy-view'
+import { SoftPaywall } from '@/components/paywall/soft-paywall'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export default function GalaxyPage() {
     <div>
       <TerminalHeader title="COMP_GALAXY" subtitle="3D Prospect Similarity Map" status="ONLINE" />
       <GalaxyView />
+      <SoftPaywall featureKey="galaxy" freeViews={3} />
     </div>
   )
 }

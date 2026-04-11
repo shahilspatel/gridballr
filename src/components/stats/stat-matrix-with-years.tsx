@@ -4,8 +4,10 @@ import { useState } from 'react'
 import { StatMatrixTable } from '@/components/stats/stat-matrix-table'
 import type { Player } from '@/types'
 
+type SeedPlayer = Omit<Player, 'id'>
+
 interface StatMatrixWithYearsProps {
-  allPlayers: Record<number, Player[]>
+  allPlayers: Record<number, SeedPlayer[]>
 }
 
 export function StatMatrixWithYears({ allPlayers }: StatMatrixWithYearsProps) {

@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import type { Player } from '@/types'
+import type { SeedPlayer } from '@/types'
 import { formatHeight, formatWeight, getPositionColor } from '@/lib/utils/format'
 
-export function PlayerCard({ player, rank }: { player: Player; rank: number }) {
+export function PlayerCard({ player, rank }: { player: SeedPlayer; rank: number }) {
   const posColor = getPositionColor(player.position)
 
   return (

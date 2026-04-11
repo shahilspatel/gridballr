@@ -56,7 +56,7 @@ export function ScoutsFeed() {
   }, [fetchReports])
 
   async function handleSubmitReport(data: {
-    player_id: string
+    player_slug: string
     tier: string
     summary: string
     strengths: string[]
@@ -87,25 +87,20 @@ export function ScoutsFeed() {
     })
 
     if (!res.ok) {
-      const err = await res.json()
-      if (err.error === 'Not authenticated') {
+      // Use HTTP status code for auth check, not brittle string matching on
+      // the error message body (which could change without breaking the API
+      // contract).
+      if (res.status === 401) {
         setError('Sign in to vote')
         return
       }
     }
 
-    // Optimistic update: adjust count locally
-    setReports((prev) =>
-      prev.map((r) => {
-        if (r.id !== reportId) return r
-        const reactions = { ...r.reactions }
-        // Toggle: we don't know server state, just bump for responsiveness
-        reactions[voteType] = (reactions[voteType] ?? 0) + 1
-        return { ...r, reactions }
-      }),
-    )
-
-    // Then refresh to get accurate server state
+    // Skip optimistic update — the toggle semantics (add vs remove) make
+    // optimistic counting unreliable: bumping +1 when the server actually
+    // removed the vote produces a jank flash. Instead, just refetch the
+    // accurate server state immediately. The latency is low enough (<200ms
+    // for a single Supabase query) that the UX is fine without optimistic.
     await fetchReports()
   }
 

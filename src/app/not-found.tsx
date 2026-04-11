@@ -30,8 +30,12 @@ export default function NotFound() {
                 COMPARE
               </Link>
               <span className="text-border">|</span>
-              <Link href="/mock-draft" className="hover:text-cyan">
-                MOCK DRAFT
+              <Link href="/pricing" className="hover:text-cyan">
+                PRICING
+              </Link>
+              <span className="text-border">|</span>
+              <Link href="/early-access" className="hover:text-cyan">
+                WAITLIST
               </Link>
             </div>
           </div>

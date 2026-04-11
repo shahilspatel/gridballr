@@ -10,7 +10,7 @@ const PREMIUM_ROUTES = [
   '/mock-draft',
 ]
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   // Skip auth checks if Supabase is not configured
@@ -27,7 +27,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options),
@@ -46,7 +46,6 @@ export async function middleware(request: NextRequest) {
 
   // Premium route protection — DISABLED for pre-launch open access
   // To re-enable: remove the `false &&` below
-  // eslint-disable-next-line no-constant-condition
   if (false && !user) {
     const isPremium = PREMIUM_ROUTES.some(
       (route) => pathname === route || pathname.startsWith(route + '/'),
